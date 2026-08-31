@@ -980,6 +980,11 @@ here in one place rather than scattered through the prose.
 
 - **[`docs/devpost_submission.md`](docs/devpost_submission.md)** — paste-ready
   copy for every field on the Devpost form, with character counts checked.
+- **[`docs/github_publishing.md`](docs/github_publishing.md)** — publishing this
+  repository as a team: the commands, adding collaborators, and what to do about
+  a five-person submission with a single-author commit history.
+- **[`docs/screenshots.md`](docs/screenshots.md)** — the seven gallery images,
+  in upload order, and how to capture them at exactly 1440×960.
 - **[`docs/submission_checklist.md`](docs/submission_checklist.md)** — the
   running order for all three deliverables, the exact `git remote add` / `push`
   commands, and the list of numbers that are safe to quote.
