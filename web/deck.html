@@ -41,6 +41,10 @@
   .slide {
     position: fixed; inset: 0; display: none;
     padding: clamp(2rem, 6vw, 6rem);
+    /* Extra room at the foot so the fixed counter and key hint can never sit
+       on top of a slide's own content -- the team credit is pushed to the
+       bottom by `margin-top: auto` and collided with them on a tall viewport. */
+    padding-bottom: calc(clamp(2rem, 6vw, 6rem) + 1.6rem);
     flex-direction: column; justify-content: center;
     opacity: 0; transition: opacity 0.25s ease;
   }
