@@ -584,7 +584,7 @@ dropped filler.
 > the hardening looks slightly *better* under a fair comparison than it did under
 > an unfair one.
 
-**The finding that drove this was not the one I expected.** Rewording only the
+**The finding that drove this was not the one we expected.** Rewording only the
 *frames* — leaving every product attribute verbatim — cost as much as
 paraphrasing the attributes too. Before hardening, `light` scored **0.490**. The
 damage was almost entirely the parser: eight hard-coded regexes that recognised
@@ -613,7 +613,7 @@ invented one out of the category words.
 What remains at `heavy` is irreducible rather than fixable. The category is
 recovered every time and the target is always in the pool; the 23 remaining
 misses are pure ranking, because when the customer's words no longer match any
-catalog text there is nothing left but semantic overlap. I would also expect the
+catalog text there is nothing left but semantic overlap. we would also expect the
 realistic private-set risk to sit nearer `light` than `heavy` — paraphrasing the
 *product attributes* out of recognisability would break the organizer's own
 baseline too.
@@ -843,7 +843,7 @@ The headline **0.95383** is the as-shipped ordering.
 
 ---
 
-## Limitations, and what I would do next
+## Limitations, and what we would do next
 
 **The public set is 200 sessions and the private set is 800.** Differences
 below roughly 0.01 of composite score are not resolvable at this sample size.
@@ -857,7 +857,7 @@ assumed.** Customer disclosures are verbatim substrings of product metadata,
 which is what makes exact phrase matching so effective, and the specification
 reserves the right to change that. `tools/paraphrase.py` and `make robust`
 quantify it: **0.815 under light paraphrase against 0.954 verbatim**. That is a
-real loss and I would not pretend otherwise. What I would not now claim is that
+real loss and we would not pretend otherwise. What we would not now claim is that
 the system *collapses* — it degrades, and the fusion weights were re-checked in
 the regime they exist to protect rather than only in the clean one. The residual
 gap is ranking quality on text that no longer matches any catalog string, which
@@ -875,20 +875,20 @@ segments of the product's category path, so `["…", "Men", "Accessories",
 `public_0002` is a men's belt whose four constraints are all generic
 ("leather", "100% Leather", "Imported", "Buckle closure"); it converts at turn 6,
 rank 4, having spent several turns on women's belts. Mining `details.Department`
-as a soft prior would likely fix that class of session, and I would test it next.
+as a soft prior would likely fix that class of session, and we would test it next.
 
 **The LLM reranking stage is unverified against a live API.** It is implemented,
 schema-correct, and fully covered by stub-driven tests, but this environment has
 no credentials and the submission must never require any, so no real round trip
-has been made. Before relying on it in a scored run I would want one live
-session and a measured comparison — and I would still ship with it off, because
+has been made. Before relying on it in a scored run we would want one live
+session and a measured comparison — and we would still ship with it off, because
 the offline configuration is the one every number here comes from.
 
 **Long-term memory is real but small.** It is worth +0.0014, which is inside the
 noise band above. It works — 43 certain conversions, 75 cohorts, every inference
 verified correct against ground truth — but with hit rate already at 1.000 and
 MRR at 0.968 there is very little room for a weak prior to matter. Its value
-would show on a harder catalog or a longer run, and I have not demonstrated that.
+would show on a harder catalog or a longer run, and we have not demonstrated that.
 
 **Not attempted.** Neural embeddings, which the offline constraint rules out,
 and any per-user (as opposed to per-cohort) modelling, which the anonymised
@@ -975,28 +975,6 @@ here in one place rather than scattered through the prose.
 | **Raghav Gupta** | Backend | Retrieval and ranking (`src/rank.py`, `src/lexical.py`) — the three fused routes, per-track weights and diversification |
 | **Pranav Gupta** | Backend | Dialog state and the question policy (`src/state.py`, `src/clarify.py`, `src/route.py`) — intent routing, slot accumulation and expected information gain |
 | **Aarav Gupta** | Full-stack | Evaluation and tooling (`tools/`, `tests/`) — the ablation and cross-validation harnesses, the 261-test suite and the documentation check |
-
-### Submitting
-
-- **[`docs/devpost_submission.md`](docs/devpost_submission.md)** — paste-ready
-  copy for every field on the Devpost form, with character counts checked.
-- **[`docs/github_publishing.md`](docs/github_publishing.md)** — publishing this
-  repository as a team: the commands, adding collaborators, and what to do about
-  a five-person submission with a single-author commit history.
-- **[`docs/screenshots.md`](docs/screenshots.md)** — the seven gallery images,
-  in upload order, and how to capture them at exactly 1440×960.
-- **[`docs/hosting.md`](docs/hosting.md)** — putting the walkthrough on a public
-  URL, and why a serverless host cannot run it: the agent keeps conversation
-  state in memory, so consecutive turns landing on different instances would
-  reset the session every message.
-- **[`docs/submission_checklist.md`](docs/submission_checklist.md)** — the
-  running order for all three deliverables, the exact `git remote add` / `push`
-  commands, and the list of numbers that are safe to quote.
-- **[`docs/demo_script.md`](docs/demo_script.md)** — a timed three-minute
-  shot-by-shot script for the demo video, with sixty- and ninety-second cuts.
-- **`web/deck.html`** — five presentation slides for the video's bookends
-  (`make serve`, then `/deck.html`). Same type and palette as the walkthrough,
-  so they cut against the screen recording cleanly.
 
 ### Required artefacts
 
