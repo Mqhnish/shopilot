@@ -1,0 +1,58 @@
+[
+  {
+    "paraphrase": "none",
+    "arm": "hardened",
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.968278,
+    "mttc": 2.825,
+    "technical_score": 0.953983
+  },
+  {
+    "paraphrase": "light",
+    "arm": "hardened",
+    "hit_rate_at_10": 0.87,
+    "mrr": 0.791026,
+    "mttc": 3.89,
+    "technical_score": 0.814508
+  },
+  {
+    "paraphrase": "light",
+    "arm": "unhardened",
+    "hit_rate_at_10": 0.685,
+    "mrr": 0.522048,
+    "mttc": 6.45,
+    "technical_score": 0.590114
+  },
+  {
+    "paraphrase": "medium",
+    "arm": "hardened",
+    "hit_rate_at_10": 0.88,
+    "mrr": 0.792718,
+    "mttc": 3.98,
+    "technical_score": 0.818215
+  },
+  {
+    "paraphrase": "medium",
+    "arm": "unhardened",
+    "hit_rate_at_10": 0.705,
+    "mrr": 0.503349,
+    "mttc": 6.475,
+    "technical_score": 0.594005
+  },
+  {
+    "paraphrase": "heavy",
+    "arm": "hardened",
+    "hit_rate_at_10": 0.86,
+    "mrr": 0.637913,
+    "mttc": 5.14,
+    "technical_score": 0.738574
+  },
+  {
+    "paraphrase": "heavy",
+    "arm": "unhardened",
+    "hit_rate_at_10": 0.705,
+    "mrr": 0.508028,
+    "mttc": 6.48,
+    "technical_score": 0.595308
+  }
+]

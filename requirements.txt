@@ -1,0 +1,17 @@
+# The agent has no required runtime dependencies.
+#
+# It runs on the Python 3.9+ standard library alone. That is a deliberate
+# choice: docs/submission_rules.md warns that official scoring may run with
+# network access disabled, so the default configuration ships no model weights,
+# makes no API calls, and needs no install step.
+#
+#     python3 tools/run_eval.py                    # scores 0.95398, zero tokens
+#     python3 -m unittest discover -s tests -t .   # 93 tests, nothing to install
+#
+# OPTIONAL -- only for the LLM semantic reranking stage (src/rerank.py), which
+# is off unless TECHJAM_RERANKER=claude is set:
+#
+#     pip install anthropic>=1.0
+#
+# Nothing in the default path imports it; src/rerank.py imports it lazily, and
+# degrades to the local reranker if it is absent or credentials do not resolve.

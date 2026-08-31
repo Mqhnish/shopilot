@@ -1,0 +1,66 @@
+{
+  "folds": 5,
+  "seed": 11,
+  "grid_size": 36,
+  "shipped_constants": {
+    "narrow_k": 1,
+    "late_turn": 6,
+    "confident_margin": 0.22
+  },
+  "shipped_in_sample": 0.9526334000000001,
+  "best_in_sample_constants": {
+    "confident_margin": 0.22,
+    "late_turn": 7,
+    "narrow_k": 1
+  },
+  "best_in_sample": 0.954071,
+  "cross_validated": 0.953171,
+  "fold_sd": 0.011578,
+  "optimism": 0.0009,
+  "held_out_scores": [
+    0.959,
+    0.941833,
+    0.968,
+    0.941083,
+    0.955937
+  ],
+  "per_fold_choice": [
+    {
+      "confident_margin": 0.22,
+      "late_turn": 7,
+      "narrow_k": 1
+    },
+    {
+      "confident_margin": 0.15,
+      "late_turn": 7,
+      "narrow_k": 1
+    },
+    {
+      "confident_margin": 0.22,
+      "late_turn": 7,
+      "narrow_k": 1
+    },
+    {
+      "confident_margin": 0.22,
+      "late_turn": 7,
+      "narrow_k": 1
+    },
+    {
+      "confident_margin": 0.22,
+      "late_turn": 7,
+      "narrow_k": 1
+    }
+  ],
+  "order_sensitivity": {
+    "orders": 4,
+    "scores": [
+      0.953833,
+      0.954433,
+      0.953683,
+      0.954033
+    ],
+    "spread": 0.00075,
+    "min": 0.953683,
+    "max": 0.954433
+  }
+}

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="96" height="96"
+     role="img" aria-label="Shopilot">
+  <title>Shopilot</title>
+  <g fill="none" stroke="#f2b544" stroke-width="2.2"
+     stroke-linecap="round" stroke-linejoin="round">
+    <!-- antenna -->
+    <path d="M17 8.5V5.2"/>
+    <!-- handle -->
+    <path d="M2.6 6.2h3.1l1.5 3.4"/>
+    <!-- basket, drawn as a face: a cart trapezoid is already the right shape -->
+    <path d="M7.6 9.6h21.2l-2.4 11.2a1.9 1.9 0 0 1-1.9 1.5H11.6a1.9 1.9 0 0 1-1.9-1.5Z"
+          fill="#f2b54426"/>
+    <!-- mouth -->
+    <path d="M14.6 18.4q2.9 2.1 5.8 0"/>
+    <!-- wheels -->
+    <circle cx="13.6" cy="27.2" r="2.3"/>
+    <circle cx="24" cy="27.2" r="2.3"/>
+  </g>
+  <g fill="#6fe3b0">
+    <circle cx="17" cy="3.6" r="1.7"/>
+    <circle cx="14.2" cy="14.4" r="1.55"/>
+    <circle cx="22.2" cy="14.4" r="1.55"/>
+  </g>
+</svg>

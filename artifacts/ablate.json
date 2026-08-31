@@ -1,0 +1,324 @@
+[
+  {
+    "arm": "full system",
+    "overrides": {},
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.968444,
+    "mttc": 2.835,
+    "efficiency": 0.8165,
+    "technical_score": 0.953833,
+    "seconds": 7.8,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "- exact phrase route",
+    "overrides": {
+      "use_phrase": false
+    },
+    "hit_rate_at_10": 0.955,
+    "mrr": 0.838931,
+    "mttc": 4.0,
+    "efficiency": 0.7,
+    "technical_score": 0.869179,
+    "seconds": 9.8,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 0.9625,
+      "buying": 0.95,
+      "intent_override": 0.933333
+    }
+  },
+  {
+    "arm": "- BM25 route",
+    "overrides": {
+      "use_bm25": false
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.971264,
+    "mttc": 2.81,
+    "efficiency": 0.819,
+    "technical_score": 0.955179,
+    "seconds": 7.4,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "- vector route",
+    "overrides": {
+      "use_vector": false
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.967722,
+    "mttc": 2.685,
+    "efficiency": 0.8315,
+    "technical_score": 0.956617,
+    "seconds": 7.3,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "- negative evidence",
+    "overrides": {
+      "use_exclusions": false
+    },
+    "hit_rate_at_10": 0.985,
+    "mrr": 0.90472,
+    "mttc": 3.075,
+    "efficiency": 0.7925,
+    "technical_score": 0.922416,
+    "seconds": 8.1,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 0.9875,
+      "buying": 0.9875,
+      "intent_override": 0.966667
+    }
+  },
+  {
+    "arm": "- dual-track routing",
+    "overrides": {
+      "use_routing": false
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.968444,
+    "mttc": 2.835,
+    "efficiency": 0.8165,
+    "technical_score": 0.953833,
+    "seconds": 6.0,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "- clarification",
+    "overrides": {
+      "use_clarify": false
+    },
+    "hit_rate_at_10": 0.73,
+    "mrr": 0.326659,
+    "mttc": 5.42,
+    "efficiency": 0.558,
+    "technical_score": 0.574598,
+    "seconds": 17.7,
+    "scenario": {
+      "boundary": 0.6,
+      "browsing": 0.5,
+      "buying": 0.8875,
+      "intent_override": 0.966667
+    }
+  },
+  {
+    "arm": "- diversity (MMR)",
+    "overrides": {
+      "use_diversity": false
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.968444,
+    "mttc": 2.835,
+    "efficiency": 0.8165,
+    "technical_score": 0.953833,
+    "seconds": 7.2,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "- profile personalisation",
+    "overrides": {
+      "use_profile": false
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.968278,
+    "mttc": 2.845,
+    "efficiency": 0.8155,
+    "technical_score": 0.953583,
+    "seconds": 6.1,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "- long-term cohort memory",
+    "overrides": {
+      "use_memory": false
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.965778,
+    "mttc": 2.855,
+    "efficiency": 0.8145,
+    "technical_score": 0.952633,
+    "seconds": 7.6,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "- frame-free span recovery",
+    "overrides": {
+      "use_span_recovery": false
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.968444,
+    "mttc": 2.835,
+    "efficiency": 0.8165,
+    "technical_score": 0.953833,
+    "seconds": 7.7,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "- list truncation",
+    "overrides": {
+      "use_truncation": false
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.689768,
+    "mttc": 2.175,
+    "efficiency": 0.8825,
+    "technical_score": 0.88343,
+    "seconds": 5.9,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "override erases slots",
+    "overrides": {
+      "override_erases": true
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.945464,
+    "mttc": 2.96,
+    "efficiency": 0.804,
+    "technical_score": 0.944439,
+    "seconds": 7.6,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "override demotes 0.45",
+    "overrides": {
+      "demote_factor": 0.45
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.972944,
+    "mttc": 2.85,
+    "efficiency": 0.815,
+    "technical_score": 0.954883,
+    "seconds": 7.7,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "- over-generality cutoff",
+    "overrides": {
+      "cutoff_on_over_general": false
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.968278,
+    "mttc": 2.825,
+    "efficiency": 0.8175,
+    "technical_score": 0.953983,
+    "seconds": 7.5,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "- cross-category browsing",
+    "overrides": {
+      "cross_category": 0
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.968444,
+    "mttc": 2.835,
+    "efficiency": 0.8165,
+    "technical_score": 0.953833,
+    "seconds": 6.3,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "+ slot decay 0.06/turn",
+    "overrides": {
+      "slot_decay": 0.06
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.968444,
+    "mttc": 2.835,
+    "efficiency": 0.8165,
+    "technical_score": 0.953833,
+    "seconds": 7.5,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "+ slot decay 0.15/turn",
+    "overrides": {
+      "slot_decay": 0.15
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.968444,
+    "mttc": 2.84,
+    "efficiency": 0.816,
+    "technical_score": 0.953733,
+    "seconds": 7.6,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  }
+]

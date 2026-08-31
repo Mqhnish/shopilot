@@ -1,0 +1,116 @@
+[
+  {
+    "arm": "adaptive barren=1, late=10",
+    "overrides": {
+      "barren_turns_before_full": 1,
+      "late_turn": 10
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.934167,
+    "mttc": 2.69,
+    "efficiency": 0.831,
+    "technical_score": 0.94645,
+    "seconds": 33.6,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "adaptive barren=1, late=8",
+    "overrides": {
+      "barren_turns_before_full": 1,
+      "late_turn": 8
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.934167,
+    "mttc": 2.69,
+    "efficiency": 0.831,
+    "technical_score": 0.94645,
+    "seconds": 32.9,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "adaptive barren=2, late=10",
+    "overrides": {
+      "barren_turns_before_full": 2,
+      "late_turn": 10
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.957714,
+    "mttc": 2.805,
+    "efficiency": 0.8195,
+    "technical_score": 0.951214,
+    "seconds": 33.7,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "adaptive off, late=8",
+    "overrides": {
+      "barren_turns_before_full": 99,
+      "late_turn": 8
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.975395,
+    "mttc": 2.92,
+    "efficiency": 0.808,
+    "technical_score": 0.954219,
+    "seconds": 37.9,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "adaptive off, late=10",
+    "overrides": {
+      "barren_turns_before_full": 99,
+      "late_turn": 10
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.975514,
+    "mttc": 2.925,
+    "efficiency": 0.8075,
+    "technical_score": 0.954154,
+    "seconds": 37.2,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  },
+  {
+    "arm": "adaptive off, late=4",
+    "overrides": {
+      "barren_turns_before_full": 99,
+      "late_turn": 4
+    },
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.936583,
+    "mttc": 2.695,
+    "efficiency": 0.8305,
+    "technical_score": 0.947075,
+    "seconds": 33.0,
+    "scenario": {
+      "boundary": 1.0,
+      "browsing": 1.0,
+      "buying": 1.0,
+      "intent_override": 1.0
+    }
+  }
+]

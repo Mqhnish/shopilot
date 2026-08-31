@@ -1,0 +1,15 @@
+index built in 14.1s; 11 arms x 200 sessions
+
+full system                        HR=1.000 MRR=0.9658 MTTC=2.855 SCORE=0.95263  (6.0s)
+- exact phrase route               HR=0.945 MRR=0.8311 MTTC=4.075 SCORE=0.86033  (8.0s)
+- BM25 route                       HR=1.000 MRR=0.9720 MTTC=2.850 SCORE=0.95459  (5.8s)
+- vector route                     HR=1.000 MRR=0.9688 MTTC=2.775 SCORE=0.95515  (5.5s)
+- negative evidence                HR=0.985 MRR=0.9056 MTTC=3.055 SCORE=0.92309  (6.2s)
+- dual-track routing               HR=1.000 MRR=0.9658 MTTC=2.860 SCORE=0.95253  (5.7s)
+- clarification                    HR=0.640 MRR=0.3730 MTTC=7.515 SCORE=0.50159  (10.4s)
+- diversity (MMR)                  HR=1.000 MRR=0.9658 MTTC=2.855 SCORE=0.95263  (5.6s)
+- list truncation                  HR=1.000 MRR=0.6911 MTTC=2.175 SCORE=0.88384  (4.1s)
+override erases slots              HR=1.000 MRR=0.9447 MTTC=2.990 SCORE=0.94362  (6.0s)
+override demotes 0.45              HR=1.000 MRR=0.9703 MTTC=2.870 SCORE=0.95368  (5.9s)
+
+wrote artifacts/ablate.json

@@ -1,0 +1,10 @@
+sessions where the target ever entered the top 200: 200/200
+best internal rank: median=1.0 mean=1.62 max=28
+  target reaches rank <= 1  :  85.5%
+  target reaches rank <= 2  :  91.5%
+  target reaches rank <= 3  :  94.0%
+  target reaches rank <= 5  :  96.0%
+  target reaches rank <= 10 :  98.5%
+  target reaches rank <= 20 :  99.0%
+  target reaches rank <= 37 : 100.0%
+  target reaches rank <= 50 : 100.0%
