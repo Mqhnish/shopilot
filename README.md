@@ -978,6 +978,8 @@ here in one place rather than scattered through the prose.
 
 ### Submitting
 
+- **[`docs/devpost_submission.md`](docs/devpost_submission.md)** — paste-ready
+  copy for every field on the Devpost form, with character counts checked.
 - **[`docs/submission_checklist.md`](docs/submission_checklist.md)** — the
   running order for all three deliverables, the exact `git remote add` / `push`
   commands, and the list of numbers that are safe to quote.
