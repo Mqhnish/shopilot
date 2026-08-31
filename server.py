@@ -605,7 +605,9 @@ class Demo:
         wife husband mom mum dad mother father son daughter sister brother
         girlfriend boyfriend partner friend him her them someone myself
         clothes clothing apparel outfit outfits wear stuff things items
-        pair set piece nice good best great new""".split())
+        pair set piece nice good best great new
+        actually instead rather now then just really maybe perhaps
+        show find get give lets let hey okay ok well hmm""".split())
 
     # A category smaller than this is a promotional leaf of the Amazon tree
     # rather than something worth searching inside. Both the typeahead and the
