@@ -162,6 +162,20 @@ evaluator exactly — `public_0002` converts on turn 6 at rank 4 here and in
 `artifacts/results.json` alike. This is the honest version of a demo: the
 customer's replies are the real ones.
 
+### Hosting it
+
+The walkthrough needs a persistent process — it indexes 50,000 products into
+memory and then keeps multi-turn session state there. That rules out a
+serverless host: consecutive turns would land on different instances and the
+conversation would reset every message.
+
+`make static` records it instead. It drives a running server and captures every
+payload the page would have fetched — six conversations turn by turn, 24
+replayed scored sessions, the benchmark tables — into a 0.38 MB bundle that
+`dist/` serves with no backend at all. Every turn in it is a real response the
+agent really gave, trace included. What it cannot do is answer a sentence nobody
+recorded, so the page offers the recorded conversations and says why.
+
 ### Four things the demo does that the scored agent does not
 
 All four are in the demo layer only, and all four exist because the metric and a
@@ -921,6 +935,8 @@ src/
   agent.py               the turn loop
 server.py                demo server for the walkthrough -- NOT the scored path
 web/                     the walkthrough page (html/css/js, no build step)
+dist/                    the same page baked static by `make static`, for a
+                         host that cannot run a persistent process
 tools/
   run_eval.py            drive the official evaluator against our agent
   sweep.py               ablations and parameter sweeps
