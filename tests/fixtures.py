@@ -26,16 +26,34 @@ _SUBSET: Tuple[str, List[dict]] = ()
 _FULL_ROWS: List[dict] = []
 
 
+MISSING_CATALOG = (
+    "the frozen catalog is not in this checkout\n\n"
+    "It is 60 MB of the organizer's data and is deliberately not committed.\n"
+    "Fetch and verify it first:\n\n"
+    "    make setup\n"
+    "    (or: python3 tools/setup_data.py)\n\n"
+    "See README.md > Setup."
+)
+
+
 def catalog_rows(limit: int = 0) -> List[dict]:
     """Raw catalog rows, cached across tests."""
     global _FULL_ROWS
     if not _FULL_ROWS:
+        # src.catalog.Catalog raises a helpful error for this; the fixtures read
+        # the file directly and so have to say the same thing themselves.
+        # Otherwise cloning the repo and running the suite before `make setup`
+        # -- which is the obvious first thing to try -- gives a bare traceback.
+        if not CATALOG.exists():
+            raise FileNotFoundError(f"{CATALOG}: {MISSING_CATALOG}")
         with CATALOG.open(encoding="utf-8") as handle:
             _FULL_ROWS = [json.loads(line) for line in handle if line.strip()]
     return _FULL_ROWS[:limit] if limit else _FULL_ROWS
 
 
 def public_samples() -> List[dict]:
+    if not PUBLIC_SET.exists():
+        raise FileNotFoundError(f"{PUBLIC_SET}: {MISSING_CATALOG}")
     with PUBLIC_SET.open(encoding="utf-8") as handle:
         return [json.loads(line) for line in handle if line.strip()]
 

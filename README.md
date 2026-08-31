@@ -969,6 +969,14 @@ here in one place rather than scattered through the prose.
      if you are submitting as a team — the brief asks for them explicitly. -->
 Solo entry: all architecture, implementation, evaluation and writing.
 
+### Submitting
+
+- **[`docs/submission_checklist.md`](docs/submission_checklist.md)** — the
+  running order for all three deliverables, the exact `git remote add` / `push`
+  commands, and the list of numbers that are safe to quote.
+- **[`docs/demo_script.md`](docs/demo_script.md)** — a timed three-minute script
+  for the demo video, with a sixty-second cut.
+
 ### Required artefacts
 
 - **Agent entry file** — `agent.py`, exporting `Agent` per `docs/agent_api_contract.json`.
