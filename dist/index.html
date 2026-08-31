@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shopilot — TikTok TechJam 2026, Track 4</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%23f2b544' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 8.5V5.2'/%3E%3Cpath d='M2.6 6.2h3.1l1.5 3.4'/%3E%3Cpath d='M7.6 9.6h21.2l-2.4 11.2a1.9 1.9 0 0 1-1.9 1.5H11.6a1.9 1.9 0 0 1-1.9-1.5Z' fill='%23f2b54426'/%3E%3Cpath d='M14.6 18.4q2.9 2.1 5.8 0'/%3E%3Ccircle cx='13.6' cy='27.2' r='2.3'/%3E%3Ccircle cx='24' cy='27.2' r='2.3'/%3E%3C/g%3E%3Cg fill='%236fe3b0'%3E%3Ccircle cx='17' cy='3.6' r='1.9'/%3E%3Ccircle cx='14.2' cy='14.4' r='1.7'/%3E%3Ccircle cx='22.2' cy='14.4' r='1.7'/%3E%3C/g%3E%3C/svg%3E">
+<meta name="description" content="Shopilot — a multi-turn conversational shopping agent over 50,000 Amazon products: dual-track intent routing, three-route hybrid retrieval, and clarifying questions chosen by expected information gain.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="copilot.css">
+</head>
+
+<body data-copilot-page>
+
+<div class="scroll-progress" data-shared-effect="scroll-progress" aria-hidden="true"><i></i></div>
+<div class="grain" data-shared-effect="grain" aria-hidden="true"></div>
+
+<a class="skip-link" href="#chat">Skip to the conversation</a>
+
+<header class="masthead">
+  <div class="wrap masthead-inner">
+    <a class="brand" href="#top" data-magnetic>
+      <svg class="brand-mark" viewBox="0 0 32 32" role="img" aria-label="Shopilot" focusable="false">
+        <!-- Antenna: the bit that makes a shopping cart read as a head. -->
+        <path class="bm-line" d="M17 8.5V5.2"/>
+        <circle class="bm-dot" cx="17" cy="3.6" r="1.7"/>
+        <!-- Handle -->
+        <path class="bm-line" d="M2.6 6.2h3.1l1.5 3.4"/>
+        <!-- Basket, drawn as a face: a cart trapezoid is already the right shape. -->
+        <path class="bm-body" d="M7.6 9.6h21.2l-2.4 11.2a1.9 1.9 0 0 1-1.9 1.5H11.6a1.9 1.9 0 0 1-1.9-1.5Z"/>
+        <!-- Eyes -->
+        <circle class="bm-eye" cx="14.2" cy="14.4" r="1.55"/>
+        <circle class="bm-eye" cx="22.2" cy="14.4" r="1.55"/>
+        <!-- Mouth -->
+        <path class="bm-line" d="M14.6 18.4q2.9 2.1 5.8 0"/>
+        <!-- Wheels -->
+        <circle class="bm-wheel" cx="13.6" cy="27.2" r="2.3"/>
+        <circle class="bm-wheel" cx="24" cy="27.2" r="2.3"/>
+      </svg>
+      <span>Shop<b>i</b>lot</span>
+    </a>
+    <nav class="masthead-nav" aria-label="Sections">
+      <a href="#chat">Try it</a>
+      <a href="#replay">Replay</a>
+      <a href="#compare">Compare</a>
+      <a href="#score">Results</a>
+      <a href="#how">How it decides</a>
+    </nav>
+    <span class="masthead-tag">TechJam·26 · Track 4</span>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ── Hero ─────────────────────────────────────────────────────────── -->
+<section class="hero wrap">
+  <p class="eyebrow">Shopilot · Track 4</p>
+  <h1 class="display" data-kinetic>
+    It decides whether to answer you<br>or ask you one more question.
+  </h1>
+  <p class="lede">
+    A multi-turn agent over a frozen 50,000-product Amazon catalog. It routes
+    every turn between a precise <em>buying</em> filter and a diverse
+    <em>browsing</em> spread, carries your constraints forward, and picks its
+    next question by <em>expected information gain</em> rather than from a list.
+    Every panel below is read straight off the agent's own trace.
+  </p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="#chat" data-magnetic>Start a conversation</a>
+    <a class="btn btn-ghost" href="#replay" data-magnetic>Replay a scored session</a>
+  </div>
+
+  <!-- The headline result, stated up front rather than buried. Filled from
+       artifacts/results.json via /api/copilot/benchmark. -->
+  <dl class="hero-stats" id="heroStats">
+    <div><dt>TechnicalScore</dt><dd class="mono" data-stat="score">—</dd></div>
+    <div><dt>Hit Rate@10</dt><dd class="mono" data-stat="hr">—</dd></div>
+    <div><dt>MRR</dt><dd class="mono" data-stat="mrr">—</dd></div>
+    <div><dt>Mean turns</dt><dd class="mono" data-stat="mttc">—</dd></div>
+    <div><dt>Tokens spent</dt><dd class="mono" data-stat="tokens">—</dd></div>
+  </dl>
+</section>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-run">
+    <span>dual-track routing</span><i>◆</i>
+    <span>expected information gain</span><i>◆</i>
+    <span>three retrieval routes</span><i>◆</i>
+    <span>negative evidence</span><i>◆</i>
+    <span>intent override</span><i>◆</i>
+    <span>cohort memory</span><i>◆</i>
+    <span>zero tokens</span><i>◆</i>
+    <span>10-turn budget</span><i>◆</i>
+  </div>
+</div>
+
+<!-- ── The demo ─────────────────────────────────────────────────────── -->
+<section class="demo wrap" id="chat">
+  <div class="section-head">
+    <h2 class="display-sm" data-kinetic>Talk to it</h2>
+    <p>
+      Nothing on the right is mocked — it is the same trace
+      <code>tools/demo.py</code> prints, rendered live. Pick a shopper profile to
+      see how the aggregate profile enters ranking (weighted 0.18 against 1.0 for
+      anything you actually say, so it can never overrule you).
+    </p>
+  </div>
+
+  <div class="control-bar">
+    <div class="control-row" role="group" aria-label="Answer style">
+      <span class="profile-label mono">answers</span>
+      <div class="chips" id="modeChips"></div>
+      <span class="profile-summary" id="modeSummary"></span>
+    </div>
+    <div class="control-row" role="group" aria-label="Shopper profile">
+      <span class="profile-label mono">profile</span>
+      <div class="chips" id="profileChips"></div>
+      <span class="profile-summary" id="profileSummary">No prior signal.</span>
+    </div>
+  </div>
+
+  <div class="demo-grid">
+
+    <!-- Conversation -->
+    <div class="panel panel-chat" data-tilt>
+      <div class="panel-head">
+        <span class="dot" data-status="idle" aria-hidden="true"></span>
+        <h3>Conversation</h3>
+        <span class="turn-counter" id="turnCounter" aria-live="polite">turn 0 / 10</span>
+      </div>
+
+      <div class="thread" id="thread" role="log" aria-live="polite" aria-label="Conversation">
+        <div class="empty-state" id="emptyState">
+          <p>
+            Open it however you like. The evaluator always names a catalog
+            category on turn one; a person does not, so the demo resolves one
+            first and shows you what it resolved. Greetings are free — they
+            never spend a turn.
+          </p>
+          <div id="starterChips"></div>
+        </div>
+      </div>
+
+      <div class="composer-wrap">
+        <!-- Context-aware suggestions. Before a category is locked this lists
+             the catalog's real coarse categories with the exact opener each one
+             becomes; after, it lists the constraints the live candidate pool can
+             still disclose. Both come from the server, so what is offered and
+             what the agent is handed can never disagree. -->
+        <div class="typeahead" id="typeahead" hidden role="listbox" aria-label="Suggestions"></div>
+        <div class="composer">
+          <label class="visually-hidden" for="msg">Your message</label>
+          <input id="msg" type="text" autocomplete="off" role="combobox"
+                 aria-expanded="false" aria-controls="typeahead"
+                 placeholder="Type a category, an occasion, or just say hi …">
+          <button id="send" class="btn btn-primary" data-magnetic>Send</button>
+        </div>
+      </div>
+      <div class="composer-meta">
+        <button id="reset" class="linkish" type="button">New session</button>
+        <span id="scopeNote" class="mono">50,000 Clothing, Shoes &amp; Jewelry products</span>
+        <span id="latency" class="mono"></span>
+      </div>
+    </div>
+
+    <!-- Live state -->
+    <aside class="panel panel-state" aria-label="Agent state">
+
+      <!-- Signature element: the routing decision, live. -->
+      <div class="state-block">
+        <div class="state-head">
+          <h3>Routing</h3>
+          <span class="mono" id="trackLabel">—</span>
+        </div>
+        <div class="meter" role="img" aria-label="Routing position between browsing and buying" id="meter">
+          <div class="meter-zones" aria-hidden="true">
+            <span class="zone zone-browse"></span>
+            <span class="zone zone-blend"></span>
+            <span class="zone zone-buy"></span>
+          </div>
+          <div class="meter-needle" id="needle"></div>
+        </div>
+        <div class="meter-legend" aria-hidden="true">
+          <span>browse · diverse</span><span>blend</span><span>buy · precise</span>
+        </div>
+        <p class="state-note" id="trackNote">Waiting for the first turn.</p>
+        <ul class="weights mono" id="weightList" aria-label="Fusion weights for the active track"></ul>
+      </div>
+
+      <div class="state-block">
+        <div class="state-head">
+          <h3>Constraint state</h3>
+          <span class="mono" id="slotCount">0</span>
+        </div>
+        <dl class="slots" id="slots">
+          <div class="slot" data-slot="category"><dt>category</dt><dd>—</dd></div>
+          <div class="slot" data-slot="scenario"><dt>scenario</dt><dd>—</dd></div>
+          <div class="slot" data-slot="ruled_out"><dt>ruled out</dt><dd>—</dd></div>
+          <div class="slot" data-slot="exhausted"><dt>exhausted</dt><dd>—</dd></div>
+        </dl>
+        <div class="phrase-cloud" id="phraseCloud">
+          <p class="state-note">Constraints you disclose accumulate here, with the
+            evidence weight the agent gives each one.</p>
+        </div>
+      </div>
+
+      <!-- Replaces the legacy "gate": this agent asks every turn (a turn
+           carries results AND a question), so the interesting quantity is
+           which question, not whether. -->
+      <div class="state-block">
+        <div class="state-head">
+          <h3>Next question</h3>
+          <span class="mono" id="askLabel">—</span>
+        </div>
+        <ul class="gains" id="gains" aria-label="Expected information gain per attribute"></ul>
+        <p class="state-note" id="gainNote">
+          Expected information gain over the live candidate pool, in bits.
+          Attributes you have exhausted score exactly zero, so they are never
+          asked twice — that falls out of the arithmetic, not a rule.
+        </p>
+      </div>
+
+      <div class="state-block">
+        <div class="state-head">
+          <h3>What it returned</h3>
+          <span class="mono" id="decisionMode">—</span>
+        </div>
+        <p class="decision-head" id="decisionHead">—</p>
+        <p class="state-note" id="decisionWhy">
+          The highest-leverage decision in the system is how many products to
+          return, not just how to rank them.
+        </p>
+      </div>
+
+      <div class="state-block">
+        <div class="state-head">
+          <h3>Personalisation</h3>
+          <span class="mono" id="profileWeight">—</span>
+        </div>
+        <div id="profilePanel">
+          <p class="state-note">Pick a profile above to see what it contributes.</p>
+        </div>
+      </div>
+
+      <div class="state-block state-block-tight">
+        <div class="state-head"><h3>Retrieval</h3></div>
+        <ul class="kv mono" id="retrievalKv">
+          <li><span>pool</span><b>—</b></li>
+          <li><span>in category</span><b>—</b></li>
+          <li><span>phrase hits</span><b>—</b></li>
+          <li><span>excluded</span><b>—</b></li>
+          <li><span>margin</span><b>—</b></li>
+        </ul>
+      </div>
+
+    </aside>
+  </div>
+</section>
+
+<!-- ── Replay ───────────────────────────────────────────────────────── -->
+<section class="replay wrap" id="replay">
+  <div class="section-head">
+    <h2 class="display-sm" data-kinetic>Replay a scored session</h2>
+    <p>
+      Pick any of the 200 labelled public sessions. The customer's replies come
+      from the organizer's own simulator in <code>evaluator/local_evaluator.py</code>,
+      so this is the scored behaviour, not a scripted walkthrough. The hidden
+      target is revealed to <em>you</em> after the run — never to the agent.
+    </p>
+  </div>
+
+  <div class="replay-controls">
+    <label class="visually-hidden" for="replayPick">Session</label>
+    <select id="replayPick" class="mono"></select>
+    <button id="replayRun" class="btn btn-primary" type="button" data-magnetic>Run it</button>
+    <button id="replayRandom" class="linkish" type="button">Surprise me</button>
+    <span class="mono" id="replayStatus"></span>
+  </div>
+
+  <div class="replay-out" id="replayOut" hidden>
+    <div class="panel replay-target" id="replayTarget"></div>
+    <ol class="replay-turns" id="replayTurns"></ol>
+  </div>
+</section>
+
+<!-- ── Baseline comparison ──────────────────────────────────────────── -->
+<section class="compare wrap" id="compare">
+  <div class="section-head">
+    <h2 class="display-sm" data-kinetic>Against the official starter</h2>
+    <p>
+      Your last message, sent unchanged to the weak BM25 agent shipped in
+      <code>starter/agent.py</code>. It is stateless, so the gap opens the moment
+      a conversation has a second turn — and it scores <em>0.107</em> against
+      this agent's <em>0.954</em>.
+    </p>
+  </div>
+  <div class="compare-grid">
+    <div class="panel compare-col">
+      <div class="panel-head"><h3>This agent</h3><span class="mono" id="oursTag">—</span></div>
+      <ol class="results" id="oursResults"><li class="muted">No results yet.</li></ol>
+    </div>
+    <div class="panel compare-col compare-col-baseline">
+      <div class="panel-head"><h3>BM25 starter</h3><span class="mono" id="baseTag">no state</span></div>
+      <ol class="results" id="baseResults"><li class="muted">No results yet.</li></ol>
+    </div>
+  </div>
+</section>
+
+<!-- ── Measured results ─────────────────────────────────────────────── -->
+<section class="score wrap" id="score">
+  <div class="section-head">
+    <h2 class="display-sm" data-kinetic>Measured, not claimed</h2>
+    <p>
+      Scored by the organizer's evaluator, unmodified, on all 200 public
+      sessions. Every figure here is read from a committed artifact —
+      the same files <code>make verify</code> writes.
+    </p>
+  </div>
+
+  <div class="score-grid">
+    <div class="panel score-panel">
+      <div class="panel-head"><h3>By scenario</h3><span class="mono">200 sessions</span></div>
+      <div class="table-scroll">
+        <table class="dtable" id="scenarioTable">
+          <thead><tr><th>Scenario</th><th>n</th><th>HR@10</th><th>MRR</th><th>MTTC</th></tr></thead>
+          <tbody><tr><td colspan="5" class="muted">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel score-panel">
+      <div class="panel-head"><h3>What actually drives it</h3><span class="mono">ablation</span></div>
+      <div class="table-scroll">
+        <table class="dtable" id="ablationTable">
+          <thead><tr><th>Component removed</th><th>Score</th><th>Δ</th></tr></thead>
+          <tbody><tr><td colspan="3" class="muted">Loading…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="panel-foot">
+        Read the small rows honestly: several components do not earn their keep
+        on the public set and are kept as insurance against paraphrase, which
+        the next panel prices.
+      </p>
+    </div>
+
+    <div class="panel score-panel">
+      <div class="panel-head"><h3>Under customer paraphrase</h3><span class="mono">stress test</span></div>
+      <div class="table-scroll">
+        <table class="dtable" id="robustTable">
+          <thead><tr><th>Customer text</th><th>Unhardened</th><th>Hardened</th></tr></thead>
+          <tbody><tr><td colspan="3" class="muted">Loading…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="panel-foot">
+        The specification reserves the right to reword the customer. Rather than
+        argue about it, <code>make robust</code> measures it.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Explanation ──────────────────────────────────────────────────── -->
+<section class="how wrap" id="how">
+  <div class="section-head">
+    <h2 class="display-sm" data-kinetic>Six decisions that carry the score</h2>
+    <p>
+      Each one is measured, not asserted — the deltas below come from
+      <code>artifacts/ablate.json</code>, the same file the table above reads.
+    </p>
+  </div>
+  <div class="how-grid">
+    <article class="how-card">
+      <h3>Questions are chosen, not listed</h3>
+      <p>
+        The customer discloses undisclosed constraints whose <em>type</em>
+        matches the attribute named. So a question's value is exactly how finely
+        it splits the live candidates — computable, and computed:
+        <code>IG(a) = H(C) − E[H(C | reply)]</code>. Removing this costs
+        <b>0.379</b> of composite score, more than everything else combined.
+      </p>
+    </article>
+    <article class="how-card">
+      <h3>Show one product, not ten</h3>
+      <p>
+        A session ends the instant the target appears anywhere in the list. So
+        padding a low-confidence turn buys a badly-ranked hit that ends the
+        session before a better turn arrives. While the field is wide the agent
+        offers the one product it believes. MRR climbs 0.690 → 0.968 for
+        0.65 of a turn.
+      </p>
+    </article>
+    <article class="how-card">
+      <h3>A miss is evidence</h3>
+      <p>
+        If a turn showed ten products and the session continued, the target was
+        not among them. That is not a heuristic — it follows from how a turn is
+        scored — and it removes candidates for free. It is withheld in intent
+        override sessions until the override lands, where it would be unsound.
+      </p>
+    </article>
+    <article class="how-card">
+      <h3>Override re-weights, it does not erase</h3>
+      <p>
+        The brief asks for slot erasure on intent override. Measured against the
+        actual customer, the abandoned preference is still a true attribute of
+        the target, so erasing costs <b>0.009</b>. The agent demotes instead.
+        This is the one place it deliberately departs from the brief, and the
+        ablation is the argument.
+      </p>
+    </article>
+    <article class="how-card">
+      <h3>Rarity decides what a phrase may do</h3>
+      <p>
+        A disclosed constraint may <em>nominate</em> candidates only if at most
+        500 products carry it. The largest category holds 1,354, so a phrase
+        less selective than a whole category cannot narrow anything — letting
+        &ldquo;Buckle closure&rdquo; nominate replaced a 258-product shelf with
+        an 18,000-product haystack. It still scores what other routes find.
+        Same score, evaluation <b>5&times; faster</b>.
+      </p>
+    </article>
+    <article class="how-card">
+      <h3>A turn is never empty</h3>
+      <p>
+        An unreadable message leaves nothing to rank, and a turn that returns
+        nothing cannot hit while still spending itself. Never happens on the
+        public set; the organizer reserves the right to reword the customer, so
+        the agent falls back to the held category ranked by quality. It costs
+        nothing an empty list does not already cost — the public score is
+        identical to five decimals, because the path never runs there.
+      </p>
+    </article>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot wrap">
+  <p>Shopilot · TikTok TechJam 2026 · Track 4 · Conversational Search &amp; Recommendations</p>
+  <p class="foot-team">
+    <span>Mohnish Rawat</span><i>·</i><span>Advik Jain</span><i>·</i><span>Raghav Gupta</span><i>·</i><span>Pranav Gupta</span><i>·</i><span>Aarav Gupta</span>
+  </p>
+  <p class="mono" id="footMeta">Scored headlessly — this page is the walkthrough, not the scored path.</p>
+</footer>
+
+<script>window.COPILOT_STATIC = "demo-data.json";</script>
+<script src="copilot.js"></script>
+</body>
+</html>

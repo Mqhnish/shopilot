@@ -3,7 +3,7 @@ PY ?= python3
 CATALOG ?= data/catalog.jsonl
 DATASET ?= data/public_set.jsonl
 
-.PHONY: help setup lint test eval baseline ablate grid demo serve headroom crossval docs verify clean
+.PHONY: help setup lint test eval baseline ablate grid demo serve headroom crossval static docs verify clean
 
 help:
 	@echo "make setup     download + checksum the frozen catalog (run this first)"
@@ -17,6 +17,7 @@ help:
 	@echo "make robust    score under three levels of customer paraphrase"
 	@echo "make headroom  measure how much ranking safety margin exists"
 	@echo "make crossval  5-fold CV of the tuned constants + order sensitivity"
+	@echo "make static    bake the walkthrough into dist/ for a static host"
 	@echo "make docs      check every README number against artifacts/"
 	@echo "make verify    lint + tests + baseline + eval + docs, the full check"
 
@@ -58,6 +59,11 @@ headroom:
 # Is the headline score fitted to the 200 public sessions? Also prices the
 # benchmark's own noise floor, which is what licenses the "below 0.01 is not
 # resolvable" claim made throughout the README.
+# Record the walkthrough into a static bundle. Needs `make serve` running in
+# another shell: it drives the real agent and captures what it actually returns.
+static:
+	$(PY) tools/build_static.py
+
 crossval:
 	$(PY) tools/crossval.py --catalog $(CATALOG) --dataset $(DATASET)
 	$(PY) tools/crossval.py --catalog $(CATALOG) --dataset $(DATASET) --order

@@ -1,0 +1,1223 @@
+/* Shopping Copilot — Track 4 demo page.
+ *
+ * INTEGRATION NOTE
+ * The :root block below re-declares the site's existing design tokens so this
+ * page renders correctly on its own. When merging into the main site, delete
+ * that block entirely — the tokens in the site's styles.css will cascade
+ * through and this file will inherit them. Everything below :root is scoped
+ * under [data-copilot-page] or a `cp-`-free class that does not exist on the
+ * home page, so nothing here can leak into or override the existing pages.
+ */
+
+:root {
+  /* Delete this block when merging — styles.css already defines these. */
+  --ink: #07080a;
+  --ink-2: #0e1014;
+  --ink-3: #16191f;
+  --line: #23272f;
+  --paper: #f2f3f5;
+  --muted: #8b929e;
+  --amber: #f2b544;
+  --mint: #6fe3b0;
+  --rose: #ff7a6b;
+
+  --font-display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  --r-sm: 6px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --wrap: 1180px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body[data-copilot-page] {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { width: min(100% - 2.5rem, var(--wrap)); margin-inline: auto; }
+.mono { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: -0.01em; }
+.muted { color: var(--muted); }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute; left: 1rem; top: -4rem; z-index: 200;
+  background: var(--amber); color: var(--ink); padding: 0.6rem 1rem;
+  border-radius: var(--r-sm); font-weight: 600; text-decoration: none;
+  transition: top 0.2s var(--ease);
+}
+.skip-link:focus { top: 1rem; }
+
+/* Keyboard focus stays visible everywhere. Non-negotiable. */
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+  border-radius: var(--r-sm);
+}
+
+/* ── Ambient layers ────────────────────────────────────────────────── */
+
+.scroll-progress {
+  position: fixed; inset: 0 0 auto 0; height: 2px; z-index: 120;
+  background: transparent; pointer-events: none;
+}
+.scroll-progress i {
+  display: block; height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--amber), var(--mint));
+}
+
+.grain {
+  position: fixed; inset: 0; z-index: 110; pointer-events: none; opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Masthead ──────────────────────────────────────────────────────── */
+
+.masthead {
+  position: sticky; top: 0; z-index: 100;
+  background: color-mix(in srgb, var(--ink) 82%, transparent);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+.masthead-inner {
+  display: flex; align-items: center; gap: 1.5rem;
+  padding-block: 0.9rem;
+}
+.brand {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  font-family: var(--font-display); font-weight: 800; font-size: 1.05rem;
+  color: var(--paper); text-decoration: none; letter-spacing: -0.02em;
+}
+.brand b { color: var(--amber); }
+/* Shopilot's mark: a shopping cart drawn as a robot's head. The cart
+   trapezoid is already face-shaped, so the eyes, the smile and the antenna
+   cost no extra silhouette — it still reads as a cart at 22px in the
+   masthead, and as a robot the moment it is big enough to see. */
+.brand-mark {
+  width: 26px; height: 26px; flex: none; overflow: visible;
+}
+.brand-mark .bm-body {
+  fill: color-mix(in srgb, var(--amber) 16%, transparent);
+  stroke: var(--amber); stroke-width: 2;
+  stroke-linejoin: round;
+}
+.brand-mark .bm-line {
+  fill: none; stroke: var(--amber); stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.brand-mark .bm-dot { fill: var(--mint); }
+.brand-mark .bm-eye { fill: var(--mint); }
+.brand-mark .bm-wheel {
+  fill: none; stroke: var(--amber); stroke-width: 2;
+}
+/* The antenna light blinks once on hover — a robot that is listening. */
+.brand:hover .bm-dot { animation: bm-blink 1.1s var(--ease); }
+@keyframes bm-blink {
+  0%, 100% { fill: var(--mint); }
+  45% { fill: var(--amber); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand:hover .bm-dot { animation: none; }
+}
+.masthead-nav { display: flex; gap: 1.4rem; margin-left: auto; }
+.masthead-nav a {
+  color: var(--muted); text-decoration: none; font-size: 0.9rem;
+  transition: color 0.18s var(--ease);
+}
+.masthead-nav a:hover { color: var(--paper); }
+.masthead-tag {
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted);
+  border: 1px solid var(--line); padding: 0.32rem 0.6rem; border-radius: 100px;
+  white-space: nowrap;
+}
+
+/* ── Type ──────────────────────────────────────────────────────────── */
+
+.eyebrow {
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--amber); margin: 0 0 1rem;
+}
+.display {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(2.1rem, 6vw, 4.4rem); line-height: 1.02;
+  letter-spacing: -0.035em; margin: 0 0 1.4rem;
+}
+.display-sm {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(1.5rem, 3.2vw, 2.4rem); line-height: 1.1;
+  letter-spacing: -0.03em; margin: 0 0 0.6rem;
+}
+.lede {
+  max-width: 62ch; color: #c3c8d1; font-size: clamp(1rem, 1.4vw, 1.12rem);
+  margin: 0 0 2rem;
+}
+.lede em { color: var(--paper); font-style: normal; font-weight: 600; }
+
+.hero { padding-block: clamp(3.5rem, 9vw, 7rem) 3rem; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+
+/* Kinetic reveal: words wipe up, staggered. JS splits the text at runtime,
+   so the HTML stays plain and readable to screen readers and to no-JS. */
+[data-kinetic] .kw { display: inline-block; overflow: hidden; vertical-align: bottom; }
+[data-kinetic] .kw > i {
+  display: inline-block; font-style: inherit;
+  transform: translateY(105%); opacity: 0;
+  transition: transform 0.62s var(--ease), opacity 0.62s var(--ease);
+  transition-delay: var(--d, 0ms);
+}
+[data-kinetic].is-revealed .kw > i { transform: none; opacity: 1; }
+
+/* ── Buttons ───────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 0.5rem; padding: 0.8rem 1.5rem; border-radius: 100px;
+  font-family: var(--font-body); font-weight: 600; font-size: 0.94rem;
+  text-decoration: none; cursor: pointer; border: 1px solid transparent;
+  transition: transform 0.18s var(--ease), background 0.18s var(--ease),
+              border-color 0.18s var(--ease), opacity 0.18s var(--ease);
+}
+.btn-primary { background: var(--amber); color: var(--ink); }
+.btn-primary:hover { background: #ffc65c; }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-ghost { border-color: var(--line); color: var(--paper); }
+.btn-ghost:hover { border-color: var(--muted); background: var(--ink-2); }
+
+.linkish {
+  background: none; border: 0; padding: 0; cursor: pointer;
+  color: var(--muted); font: inherit; font-size: 0.82rem;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.linkish:hover { color: var(--paper); }
+
+/* ── Ticker ────────────────────────────────────────────────────────── */
+
+.ticker {
+  border-block: 1px solid var(--line); overflow: hidden;
+  padding-block: 0.85rem; margin-bottom: 3.5rem;
+}
+.ticker-run {
+  display: flex; gap: 2rem; width: max-content;
+  animation: marquee 34s linear infinite;
+  font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.12em;
+}
+.ticker-run i { color: var(--amber); font-style: normal; }
+.ticker:hover .ticker-run { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* ── Panels ────────────────────────────────────────────────────────── */
+
+.section-head { margin-bottom: 1.8rem; max-width: 68ch; }
+.section-head p { color: var(--muted); margin: 0; }
+.section-head em { color: var(--paper); font-style: normal; }
+
+.panel {
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.panel-head {
+  display: flex; align-items: center; gap: 0.7rem;
+  padding: 1rem 1.25rem; border-bottom: 1px solid var(--line);
+  background: var(--ink-3);
+}
+.panel-head h3 {
+  margin: 0; font-size: 0.88rem; font-weight: 600; letter-spacing: -0.01em;
+}
+.panel-head .mono, .turn-counter {
+  margin-left: auto; color: var(--muted); font-family: var(--font-mono);
+  font-size: 0.74rem;
+}
+.dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--muted);
+  transition: background 0.25s var(--ease);
+}
+.dot[data-status="thinking"] { background: var(--amber); animation: pulse 1s infinite; }
+.dot[data-status="ready"] { background: var(--mint); }
+.dot[data-status="error"] { background: var(--rose); }
+@keyframes pulse { 50% { opacity: 0.25; } }
+
+.demo { padding-bottom: 4.5rem; }
+.demo-grid {
+  display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 1.25rem; align-items: start;
+}
+
+/* ── Thread ────────────────────────────────────────────────────────── */
+
+.thread {
+  min-height: 340px; max-height: 52vh; overflow-y: auto;
+  padding: 1.25rem; display: flex; flex-direction: column; gap: 0.9rem;
+  scrollbar-width: thin; scrollbar-color: var(--line) transparent;
+}
+.empty-state { color: var(--muted); font-size: 0.92rem; margin: auto 0; }
+.empty-state p { margin: 0 0 0.9rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip {
+  background: var(--ink-3); border: 1px solid var(--line); color: #c3c8d1;
+  padding: 0.45rem 0.85rem; border-radius: 100px; cursor: pointer;
+  font: inherit; font-size: 0.82rem; text-align: left;
+  transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
+}
+.chip:hover { border-color: var(--amber); color: var(--paper); }
+
+.turn { display: flex; flex-direction: column; gap: 0.35rem; }
+.turn-user { align-items: flex-end; }
+.bubble {
+  max-width: 88%; padding: 0.7rem 1rem; border-radius: var(--r-md);
+  font-size: 0.92rem; line-height: 1.55;
+  animation: rise 0.4s var(--ease) both;
+}
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+.turn-user .bubble {
+  background: var(--amber); color: var(--ink); font-weight: 500;
+  border-bottom-right-radius: var(--r-sm);
+}
+.turn-agent .bubble {
+  background: var(--ink-3); border: 1px solid var(--line);
+  border-bottom-left-radius: var(--r-sm);
+}
+.turn-agent .bubble.is-clarify { border-color: color-mix(in srgb, var(--amber) 55%, var(--line)); }
+
+.turn-badge {
+  font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--muted);
+}
+.turn-badge b { color: var(--amber); font-weight: 500; }
+
+
+.opt-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
+
+.composer {
+  display: flex; gap: 0.6rem; padding: 1rem 1.25rem;
+  border-top: 1px solid var(--line); background: var(--ink-3);
+}
+.composer input {
+  flex: 1; min-width: 0; background: var(--ink); color: var(--paper);
+  border: 1px solid var(--line); border-radius: 100px;
+  padding: 0.75rem 1.1rem; font: inherit; font-size: 0.92rem;
+}
+.composer input::placeholder { color: #5c636e; }
+.composer input:focus { border-color: var(--amber); }
+.composer-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.6rem 1.25rem; border-top: 1px solid var(--line); color: var(--muted);
+}
+
+/* ── State panel ───────────────────────────────────────────────────── */
+
+.panel-state { padding: 0.35rem 0; position: sticky; top: 5rem; }
+.state-block { padding: 1.15rem 1.25rem; border-bottom: 1px solid var(--line); }
+.state-block:last-child { border-bottom: 0; }
+.state-block-tight { padding-block: 0.95rem; }
+.state-head { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 0.85rem; }
+.state-head h3 {
+  margin: 0; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+}
+.state-head .mono { margin-left: auto; color: var(--paper); }
+.state-note { margin: 0.75rem 0 0; font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+/* Signature element: routing meter. */
+.meter {
+  position: relative; height: 34px; border-radius: 100px;
+  background: var(--ink); border: 1px solid var(--line); overflow: hidden;
+}
+.meter-zones { position: absolute; inset: 0; display: flex; }
+.zone { height: 100%; }
+.zone-browse { flex: 30; background: color-mix(in srgb, var(--mint) 14%, transparent); }
+.zone-blend  { flex: 25; background: color-mix(in srgb, var(--muted) 12%, transparent); }
+.zone-buy    { flex: 45; background: color-mix(in srgb, var(--amber) 14%, transparent); }
+.meter-needle {
+  position: absolute; top: 4px; bottom: 4px; width: 4px; left: 50%;
+  margin-left: -2px; border-radius: 100px; background: var(--paper);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--paper) 12%, transparent);
+  transition: left 0.7s var(--ease), background 0.4s var(--ease);
+}
+.meter-needle[data-track="buy"] { background: var(--amber); }
+.meter-needle[data-track="browse"] { background: var(--mint); }
+.meter-legend {
+  display: flex; justify-content: space-between; margin-top: 0.5rem;
+  font-family: var(--font-mono); font-size: 0.66rem; color: #5c636e;
+}
+
+.slots { margin: 0; display: grid; gap: 0.5rem; }
+.slot {
+  display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.7rem;
+  align-items: baseline; padding-bottom: 0.5rem;
+  border-bottom: 1px dashed color-mix(in srgb, var(--line) 70%, transparent);
+}
+.slot:last-child { border-bottom: 0; padding-bottom: 0; }
+.slot dt {
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted);
+  letter-spacing: -0.01em;
+}
+.slot dd {
+  margin: 0; font-size: 0.85rem; color: #5c636e; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.slot.is-set dd { color: var(--paper); }
+.slot.just-changed dd { animation: flash 1.1s var(--ease); }
+@keyframes flash {
+  0% { color: var(--amber); transform: translateX(-3px); }
+  100% { color: var(--paper); transform: none; }
+}
+
+.gate-bars { display: grid; gap: 0.55rem; }
+.gate-bar {
+  display: grid; grid-template-columns: 4.4rem 1fr 2.4rem;
+  gap: 0.6rem; align-items: center;
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted);
+}
+.gate-bar i {
+  display: block; height: 7px; border-radius: 100px;
+  background: var(--mint); width: 0%;
+  transition: width 0.6s var(--ease);
+}
+.gate-bar-cost i { background: var(--rose); }
+.gate-bar b { text-align: right; color: var(--paper); font-weight: 500; }
+
+.kv { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; }
+.kv li { display: flex; gap: 0.8rem; align-items: baseline; }
+.kv span { color: var(--muted); min-width: 5.6rem; }
+.kv b {
+  font-weight: 500; color: var(--paper); min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* ── Comparison ────────────────────────────────────────────────────── */
+
+.compare { padding-bottom: 4.5rem; }
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.compare-col-baseline { opacity: 0.82; }
+
+/* ── How ───────────────────────────────────────────────────────────── */
+
+.how { padding-bottom: 4rem; }
+.how-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.1rem;
+}
+.how-card {
+  border: 1px solid var(--line); border-radius: var(--r-md);
+  padding: 1.3rem; background: var(--ink-2);
+}
+.how-card h3 {
+  margin: 0 0 0.55rem; font-family: var(--font-display); font-weight: 700;
+  font-size: 1.02rem; letter-spacing: -0.02em;
+}
+.how-card p { margin: 0; font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+.foot {
+  border-top: 1px solid var(--line); padding-block: 2rem 3rem;
+  display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem;
+  justify-content: space-between; color: var(--muted); font-size: 0.85rem;
+}
+.foot p { margin: 0; }
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+
+@media (max-width: 940px) {
+  .demo-grid, .compare-grid { grid-template-columns: 1fr; }
+  .panel-state { position: static; }
+  .masthead-nav { display: none; }
+  .masthead-tag { margin-left: auto; }
+  .thread { max-height: none; }
+}
+
+@media (max-width: 560px) {
+  .composer { flex-wrap: wrap; }
+  .composer .btn { width: 100%; }
+  .slot { grid-template-columns: 5.5rem 1fr; }
+  .foot { flex-direction: column; }
+}
+
+/* ── Motion and pointer gating ─────────────────────────────────────── */
+
+/* Decorative pointer effects only exist for a real mouse. Touch devices
+   never load the cursor or magnetics at all — see copilot.js. */
+@media (pointer: fine) {
+  .cp-cursor {
+    position: fixed; top: 0; left: 0; z-index: 999; pointer-events: none;
+    mix-blend-mode: difference; will-change: transform;
+  }
+  .cp-cursor-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: #fff;
+    margin: -3.5px 0 0 -3.5px;
+  }
+  .cp-cursor-ring {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid #fff;
+    margin: -17px 0 0 -17px;
+    transition: width 0.25s var(--ease), height 0.25s var(--ease),
+                margin 0.25s var(--ease), opacity 0.25s var(--ease);
+  }
+  .cp-cursor-ring.is-hot {
+    width: 52px; height: 52px; margin: -26px 0 0 -26px; opacity: 0.55;
+  }
+  body.cp-has-cursor { cursor: none; }
+  body.cp-has-cursor a, body.cp-has-cursor button, body.cp-has-cursor input { cursor: none; }
+
+  [data-tilt] { transform-style: preserve-3d; will-change: transform; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  /* Reveal targets must end fully visible, never stuck mid-animation. */
+  [data-kinetic] .kw > i { transform: none !important; opacity: 1 !important; }
+  .ticker-run { animation: none; }
+  .cp-cursor { display: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Panels added for the current agent.
+   Everything above this line is the original page. Everything below is
+   new surface for concepts the previous prototype did not have: expected
+   information gain, the list-length decision, evidence-weighted
+   constraints, scored-session replay, and the measured results tables.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Hero statistics ───────────────────────────────────────────────── */
+
+.hero-stats {
+  display: flex; flex-wrap: wrap; gap: 0 2.75rem; margin: 2.75rem 0 0;
+  padding-top: 1.75rem; border-top: 1px solid var(--line);
+}
+.hero-stats div { display: flex; flex-direction: column; gap: 0.3rem; }
+.hero-stats dt {
+  font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+}
+.hero-stats dd {
+  margin: 0; font-family: var(--font-display); font-weight: 700;
+  font-size: 1.5rem; letter-spacing: -0.03em; color: var(--paper);
+}
+.hero-stats div:first-child dd { color: var(--amber); }
+
+/* ── Profile selector ──────────────────────────────────────────────── */
+
+.profile-bar {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem 0.9rem;
+  padding: 0.85rem 1.15rem; margin-bottom: 1.25rem;
+  background: var(--ink-2); border: 1px solid var(--line);
+  border-radius: var(--r-md);
+}
+.profile-label {
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em;
+  font-size: 0.66rem;
+}
+.profile-summary { color: var(--muted); font-size: 0.8rem; margin-left: auto; }
+.chip.is-on {
+  border-color: var(--amber); color: var(--ink); background: var(--amber);
+  font-weight: 600;
+}
+
+/* ── Fusion weights, under the routing meter ───────────────────────── */
+
+.weights {
+  list-style: none; margin: 0.85rem 0 0; padding: 0.7rem 0 0;
+  border-top: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; gap: 0.35rem 1rem;
+}
+.weights li { display: flex; gap: 0.4rem; align-items: baseline; }
+.weights span { color: var(--muted); }
+.weights b { color: var(--paper); font-weight: 500; }
+
+/* ── Disclosed constraints ─────────────────────────────────────────── */
+
+.phrase-cloud {
+  margin-top: 0.9rem; display: flex; flex-wrap: wrap; gap: 0.4rem;
+}
+.phrase-cloud .state-note { margin: 0; flex: 1 1 100%; }
+.phrase {
+  display: inline-flex; align-items: baseline; gap: 0.45rem;
+  background: color-mix(in srgb, var(--amber) 10%, var(--ink-3));
+  border: 1px solid color-mix(in srgb, var(--amber) 32%, var(--line));
+  border-radius: 100px; padding: 0.3rem 0.7rem;
+  font-size: 0.78rem; color: var(--paper); max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.phrase b { color: var(--amber); font-weight: 500; font-size: 0.68rem; }
+
+/* ── Expected information gain ─────────────────────────────────────── */
+
+.gains { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; }
+.gains li {
+  display: grid; grid-template-columns: 5.2rem 1fr 2.4rem;
+  align-items: center; gap: 0.6rem; font-size: 0.8rem; color: var(--muted);
+}
+.gains li i {
+  display: block; height: 7px; border-radius: 100px; background: var(--line);
+  transition: width 0.45s var(--ease);
+}
+/* The chosen attribute is the only one the customer will actually answer,
+   so it is the only one drawn in the accent colour. */
+.gains li.is-chosen { color: var(--paper); }
+.gains li.is-chosen i { background: linear-gradient(90deg, var(--amber), var(--mint)); }
+.gains li b { text-align: right; color: var(--paper); font-weight: 500; }
+.gains li.muted { display: block; grid-template-columns: 1fr; }
+
+/* ── The list-length decision ──────────────────────────────────────── */
+
+.decision-head {
+  margin: 0; font-size: 0.92rem; font-weight: 600; color: var(--paper);
+  letter-spacing: -0.01em;
+}
+
+.bubble .more { margin: 0.5rem 0 0; color: var(--muted); font-size: 0.7rem; }
+
+/* ── Replay ────────────────────────────────────────────────────────── */
+
+.replay { padding-bottom: 4.5rem; }
+.replay-controls {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.replay-controls select {
+  background: var(--ink-2); border: 1px solid var(--line); color: var(--paper);
+  border-radius: 100px; padding: 0.7rem 1.1rem; font-family: var(--font-mono);
+  font-size: 0.78rem; min-width: 20rem; max-width: 100%; cursor: pointer;
+}
+.replay-controls select:focus { border-color: var(--amber); }
+#replayStatus { color: var(--muted); }
+
+.replay-out {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 1.25rem; align-items: start;
+}
+.replay-target { position: sticky; top: 5rem; }
+.target-body { padding: 1.15rem 1.25rem; }
+.target-title { margin: 0 0 0.4rem; font-weight: 600; line-height: 1.4; }
+.target-meta { color: var(--muted); margin: 0 0 1rem; }
+.target-cards { display: grid; gap: 1rem; margin-bottom: 1rem; }
+.target-cards h4 {
+  margin: 0 0 0.4rem; font-family: var(--font-mono); font-size: 0.66rem;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+  font-weight: 500;
+}
+.target-cards ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.25rem; }
+.target-cards li { font-size: 0.82rem; color: #c3c8d1; }
+.verdict {
+  margin: 0 0 0.6rem; padding-top: 0.9rem; border-top: 1px solid var(--line);
+  font-size: 0.85rem; color: var(--muted);
+}
+.verdict b { font-weight: 600; }
+.verdict .ok { color: var(--mint); }
+.verdict .bad { color: var(--rose); }
+
+.replay-turns { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.85rem; }
+.replay-turn {
+  background: var(--ink-2); border: 1px solid var(--line);
+  border-radius: var(--r-md); padding: 1rem 1.15rem;
+}
+.replay-turn.is-hit { border-color: color-mix(in srgb, var(--mint) 45%, var(--line)); }
+.rt-head {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+  margin-bottom: 0.7rem; color: var(--muted);
+}
+.rt-head .mono { font-size: 0.68rem; }
+.rt-track { color: var(--paper); }
+.rt-track[data-track="buy"] { color: var(--amber); }
+.rt-track[data-track="browse"] { color: var(--mint); }
+.rt-ask, .rt-pool { color: var(--muted); }
+.rt-probe { color: var(--amber); }
+.rt-found { color: var(--mint); margin-left: auto; }
+.rt-customer, .rt-agent {
+  margin: 0 0 0.4rem; font-size: 0.86rem; line-height: 1.55;
+  display: grid; grid-template-columns: 4.6rem 1fr; gap: 0.6rem;
+}
+.rt-customer span, .rt-agent span {
+  font-family: var(--font-mono); font-size: 0.66rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.08em; padding-top: 0.25rem;
+}
+.rt-customer { color: #c3c8d1; }
+.rt-agent { color: var(--paper); }
+.replay-turn .results-inline { margin-top: 0.6rem; }
+
+/* ── Measured results ──────────────────────────────────────────────── */
+
+.score { padding-bottom: 4.5rem; }
+.score-grid {
+  display: grid; gap: 1.25rem; align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+}
+.table-scroll { overflow-x: auto; }
+.dtable { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.dtable th, .dtable td {
+  text-align: right; padding: 0.5rem 0.75rem; white-space: nowrap;
+  border-bottom: 1px solid var(--line);
+}
+.dtable th:first-child, .dtable td:first-child { text-align: left; white-space: normal; }
+.dtable th {
+  font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+.dtable td { color: #c3c8d1; }
+.dtable tbody tr:last-child td { border-bottom: 0; }
+.dtable tr.is-full td { color: var(--paper); font-weight: 600; }
+/* Ablation deltas are coloured by magnitude, not sign: at n=200 anything
+   under 0.01 is noise and should not read as a result. */
+.dtable .d-big { color: var(--amber); }
+.dtable .d-small { color: var(--muted); }
+.dtable .strong { color: var(--mint); }
+.panel-foot {
+  margin: 0; padding: 0.9rem 1.25rem 1.15rem; font-size: 0.78rem;
+  color: var(--muted); line-height: 1.55; border-top: 1px solid var(--line);
+}
+.score-panel .table-scroll { padding: 0.4rem 0.5rem; }
+
+code {
+  font-family: var(--font-mono); font-size: 0.86em;
+  background: var(--ink-3); border: 1px solid var(--line);
+  border-radius: var(--r-sm); padding: 0.1em 0.35em; color: #c3c8d1;
+}
+.how-card code, .section-head code { font-size: 0.8em; }
+
+/* ── Responsive, for the sections above ────────────────────────────── */
+
+@media (max-width: 940px) {
+  .replay-out { grid-template-columns: 1fr; }
+  .replay-target { position: static; }
+  .hero-stats { gap: 1.25rem 2rem; }
+  .profile-summary { margin-left: 0; flex: 1 1 100%; }
+}
+
+@media (max-width: 560px) {
+  .replay-controls select { min-width: 0; width: 100%; }
+  .rt-customer, .rt-agent { grid-template-columns: 1fr; gap: 0.15rem; }
+  .gains li { grid-template-columns: 4.4rem 1fr 2.2rem; }
+}
+
+/* ── Suggestion panel ──────────────────────────────────────────────── */
+/* Two modes over one list: catalog categories before a session has locked one,
+   and disclosable constraints after. Rows carry a second line saying what the
+   choice will actually send, so nothing is committed blind. */
+
+.composer-wrap { position: relative; }
+.typeahead {
+  position: absolute; left: 1rem; right: 1rem; bottom: calc(100% - 0.25rem);
+  z-index: 40; background: var(--ink-3); border: 1px solid var(--line);
+  border-radius: var(--r-md); overflow: hidden;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+  display: grid;
+  max-height: 22rem; overflow-y: auto;
+}
+/* `display: grid` above outranks the user-agent rule for [hidden], so without
+   this the list stays on screen however correctly the script closes it. */
+.typeahead[hidden] { display: none; }
+
+.ta-note {
+  margin: 0; padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--ink-2) 70%, transparent);
+  color: var(--muted); font-size: 0.74rem; line-height: 1.45;
+  position: sticky; top: 0; z-index: 1;
+}
+.ta-note b { color: var(--paper); font-weight: 600; }
+.ta-note s { color: var(--rose); text-decoration-thickness: 1px; margin-right: 0.15rem; }
+.ta-note.is-chat { color: var(--mint); }
+.ta-note.is-warn { color: var(--amber); }
+.ta-note.is-empty {
+  color: var(--rose); border-bottom: 0;
+  background: color-mix(in srgb, var(--rose) 8%, transparent);
+}
+
+.ta-item {
+  display: flex; align-items: flex-start; gap: 0.75rem;
+  background: none; border: 0; border-bottom: 1px solid var(--line);
+  color: #c3c8d1; font: inherit; font-size: 0.86rem; text-align: left;
+  padding: 0.55rem 0.9rem; cursor: pointer; width: 100%;
+}
+.ta-item:last-child { border-bottom: 0; }
+.ta-main { flex: 1; min-width: 0; display: grid; gap: 0.1rem; }
+.ta-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ta-via {
+  font-style: normal; color: var(--mint); font-size: 0.72rem;
+  font-family: var(--font-mono); margin-left: 0.35rem;
+}
+.ta-hint {
+  color: var(--muted); font-size: 0.7rem; font-family: var(--font-mono);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ta-side {
+  display: grid; justify-items: end; gap: 0.05rem; flex: none; text-align: right;
+}
+.ta-meta { color: var(--muted); font-weight: 400; font-size: 0.7rem; }
+.ta-aside { font-style: normal; color: #5f6672; font-size: 0.62rem; }
+.ta-action { color: var(--amber); }
+.ta-item:hover, .ta-item.is-active { background: var(--ink-2); color: var(--paper); }
+.ta-item:hover .ta-meta, .ta-item.is-active .ta-meta { color: var(--amber); }
+.ta-item:hover .ta-aside, .ta-item.is-active .ta-aside { color: #8b929e; }
+.ta-item:hover .ta-hint, .ta-item.is-active .ta-hint { color: #a5adba; }
+
+.composer-meta { gap: 1rem; }
+#scopeNote { color: var(--muted); margin-right: auto; }
+
+/* ── Out-of-scope notice ───────────────────────────────────────────── */
+
+.turn-note { align-items: stretch; }
+.scope-warning {
+  background: color-mix(in srgb, var(--amber) 8%, var(--ink-3));
+  border: 1px solid color-mix(in srgb, var(--amber) 34%, var(--line));
+  border-radius: var(--r-md); padding: 0.75rem 0.95rem;
+  font-size: 0.82rem; line-height: 1.55; color: #c3c8d1;
+}
+.scope-warning b { display: block; color: var(--amber); font-weight: 600; margin-bottom: 0.25rem; }
+.scope-warning em { font-style: normal; color: var(--paper); }
+
+@media (max-width: 560px) {
+  #scopeNote { display: none; }
+}
+
+.assist-note {
+  background: color-mix(in srgb, var(--mint) 7%, var(--ink-3));
+  border: 1px solid color-mix(in srgb, var(--mint) 30%, var(--line));
+  border-radius: var(--r-md); padding: 0.75rem 0.95rem;
+  font-size: 0.8rem; line-height: 1.55; color: var(--muted);
+}
+/* Direct child only: this is the note's headline. A `b` inside one of the
+   explanatory paragraphs is emphasis, and inheriting `display: block` broke it
+   onto its own line with the sentence's full stop stranded below. */
+.assist-note > b {
+  display: block; color: var(--paper); font-weight: 600; margin-bottom: 0.3rem;
+}
+.assist-note > b span { color: var(--mint); }
+
+/* One line under the headline: what was inferred, at a glance. */
+.note-line {
+  margin: 0; font-size: 0.74rem; color: var(--muted);
+}
+.note-line s { color: var(--rose); text-decoration-thickness: 1px; margin-right: 0.15rem; }
+.note-line em { font-style: normal; color: #c3c8d1; }
+
+/* The reasoning, folded away. It is the thing that makes the rewrite honest,
+   and it is also the thing nobody needs between their question and the answer —
+   so it is one click, and native <details> keeps it on the keyboard for free. */
+.note-why { margin-top: 0.4rem; }
+.note-why > summary {
+  cursor: pointer; list-style: none; display: inline-block;
+  font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--muted);
+  border: 1px solid var(--line); border-radius: 100px; padding: 0.1rem 0.55rem;
+  transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+.note-why > summary::-webkit-details-marker { display: none; }
+.note-why > summary::after { content: " +"; }
+.note-why[open] > summary::after { content: " −"; }
+.note-why > summary:hover { color: var(--paper); border-color: var(--muted); }
+.note-why-body {
+  margin-top: 0.5rem; padding-top: 0.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  font-size: 0.76rem;
+}
+.note-why-body p { margin: 0 0 0.5rem; }
+.note-why-body p:last-child { margin-bottom: 0; }
+.note-why-body b { color: var(--paper); font-weight: 600; }
+.note-why-body em { font-family: var(--font-mono); font-style: normal; color: #c3c8d1; }
+.note-why-body code { margin-top: 0.35rem; }
+
+/* Out-of-scope notes reuse the same shape in a warning colour. */
+.assist-note.is-scope {
+  background: color-mix(in srgb, var(--amber) 6%, var(--ink-3));
+  border-color: color-mix(in srgb, var(--amber) 32%, var(--line));
+}
+.assist-note.is-scope > b { color: var(--amber); }
+.assist-note.is-scope .chip { margin-top: 0.6rem; }
+.assist-note code {
+  display: block; margin-top: 0.45rem; font-size: 0.74rem;
+  color: #c3c8d1; white-space: normal; word-break: break-word;
+}
+
+/* ── Control bar (answer style + profile) ──────────────────────────── */
+
+.control-bar {
+  background: var(--ink-2); border: 1px solid var(--line);
+  border-radius: var(--r-md); margin-bottom: 1.25rem; overflow: hidden;
+}
+.control-row {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem 0.9rem;
+  padding: 0.8rem 1.15rem; border-bottom: 1px solid var(--line);
+}
+.control-row:last-child { border-bottom: 0; }
+
+/* ── Follow-up option chips ────────────────────────────────────────── */
+
+.opt-row {
+  display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem;
+  padding-top: 0.7rem; border-top: 1px solid var(--line); align-items: center;
+}
+.opt-label {
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em;
+  font-size: 0.62rem; margin-right: 0.2rem;
+}
+.opt-row .chip { font-size: 0.76rem; padding: 0.32rem 0.7rem; }
+
+.phrase.is-tag {
+  background: color-mix(in srgb, var(--mint) 9%, var(--ink-3));
+  border-color: color-mix(in srgb, var(--mint) 30%, var(--line));
+}
+.phrase.is-tag b { color: var(--mint); }
+
+/* A silent spelling correction is confusing when the results do not match
+   what you think you typed, so the repair is shown. */
+.assist-note .fixes { margin: 0 0 0.35rem; font-size: 0.76rem; color: var(--muted); }
+.assist-note .fixes s { color: var(--rose); text-decoration-thickness: 1px; margin-right: 0.15rem; }
+
+.assist-note.is-switch {
+  background: color-mix(in srgb, var(--amber) 8%, var(--ink-3));
+  border-color: color-mix(in srgb, var(--amber) 34%, var(--line));
+}
+.assist-note.is-switch > b span { color: var(--amber); }
+.assist-note > b s { color: var(--muted); font-weight: 400; }
+.assist-note .fixes b { display: inline; font-weight: 600; margin: 0; }
+
+.scope-warning.is-stuck { border-color: color-mix(in srgb, var(--rose) 40%, var(--line)); }
+.scope-warning.is-stuck b { color: var(--rose); }
+.scope-warning .chip { margin-top: 0.6rem; }
+
+/* ── Result cards ──────────────────────────────────────────────────── */
+/* One card definition, used by the conversation, the baseline comparison and
+   the replay, so a product looks the same wherever it appears. There are no
+   images in the frozen catalog -- the brief restricts the task to text -- so
+   the hierarchy has to come from type and space: rank, title, then the row of
+   evidence that says why this product is here at all. */
+
+.results-inline,
+.results {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 0.35rem;
+}
+.results-inline { margin-top: 0.6rem; }
+.results { padding: 0.85rem 0.95rem; }
+
+li.card {
+  display: grid;
+  grid-template-columns: 1.35rem minmax(0, 1fr) auto;
+  gap: 0.15rem 0.7rem;
+  align-items: start;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+  transition: border-color 0.18s var(--ease), background 0.18s var(--ease);
+}
+.results li.card {
+  background: none;
+  border-bottom: 1px dashed color-mix(in srgb, var(--line) 70%, transparent);
+  border-radius: 0; padding-left: 0; padding-right: 0;
+}
+.results li.card:last-child { border-bottom-color: transparent; }
+
+.card-rank {
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted);
+  line-height: 1.5; padding-top: 0.1rem; font-variant-numeric: tabular-nums;
+}
+.card-body { min-width: 0; display: grid; gap: 0.15rem; }
+
+.card-title {
+  font-size: 0.85rem; line-height: 1.35; color: #dfe3e9;
+  /* Two lines, not one. Amazon titles are keyword-stuffed to 150 characters
+     and a single ellipsized line routinely cuts before the noun. */
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; overflow-wrap: anywhere;
+}
+.card-meta {
+  font-size: 0.68rem; color: var(--muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* The lead result is a recommendation, not row one of a table. */
+li.card.is-lead { background: color-mix(in srgb, var(--paper) 4%, transparent); }
+li.card.is-lead .card-rank { color: var(--amber); }
+li.card.is-lead .card-title { color: var(--paper); font-weight: 500; }
+
+.card-stats {
+  display: grid; justify-items: end; gap: 0.1rem;
+  font-family: var(--font-mono); white-space: nowrap;
+}
+.m-price { font-size: 0.78rem; color: var(--mint); font-variant-numeric: tabular-nums; }
+.m-price.is-none { font-size: 0.64rem; color: #5c636e; letter-spacing: 0.02em; }
+.m-rating { display: inline-flex; align-items: baseline; gap: 0.3rem; }
+.m-rating .s {
+  font-style: normal; font-size: 0.64rem; color: var(--amber);
+  letter-spacing: 0.05em; font-family: var(--font-body);
+}
+.m-rating .c { font-style: normal; font-size: 0.62rem; color: var(--muted); }
+
+/* ── Why this row is here ──────────────────────────────────────────── */
+/* Each chip is a constraint the product literally carries, from the same
+   two-tier lookup src/lexical.py scores with. Rarity is the difference between
+   "Imported", which 14,000 products carry, and a phrase held by nine -- so the
+   two are not drawn the same. */
+
+/* A direct child of the card, not of `.card-body`: nested inside a
+   single-column grid, `grid-column: 2 / -1` conjured an implicit second column
+   and threw the store line up beside the title. Out here it spans the full
+   width under both the title and the stats, which is also where it belongs. */
+/* Stated once above the list rather than repeated on every card: when all ten
+   rows carry "black" and "leather", that is a fact about the turn, and the
+   only useful thing a card can say is what the others do not. */
+.shared-why {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem;
+  margin: 0.6rem 0 0.1rem;
+}
+.shared-why .mono {
+  font-size: 0.62rem; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.08em; margin-right: 0.15rem;
+}
+
+.card-why {
+  grid-column: 2 / -1;
+  display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.2rem;
+}
+.ev {
+  font-style: normal; font-size: 0.63rem; line-height: 1.5;
+  padding: 0.02rem 0.4rem; border-radius: 100px;
+  border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+  background: color-mix(in srgb, var(--paper) 3%, transparent);
+  color: var(--muted);
+  max-width: 15rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* Rare enough to be most of the reason this row ranks where it does. */
+.ev.is-decisive {
+  border-color: color-mix(in srgb, var(--mint) 42%, var(--line));
+  background: color-mix(in srgb, var(--mint) 11%, transparent);
+  color: var(--mint);
+}
+/* Matched with punctuation stripped rather than verbatim. */
+.ev.is-soft { border-style: dashed; }
+/* A word from the conversation found in the product's own indexed text. Weaker
+   evidence than a whole constraint, and drawn weaker. */
+.ev.is-term {
+  border-color: transparent; background: none; padding-left: 0.15rem;
+  padding-right: 0.15rem; color: #6f7683;
+}
+.ev.is-term::before { content: "“"; }
+.ev.is-term::after { content: "”"; }
+.ev.is-more { color: #6f7683; }
+.ev.is-profile {
+  border-color: color-mix(in srgb, var(--amber) 32%, var(--line));
+  color: var(--amber);
+}
+.ev.is-off {
+  border-color: color-mix(in srgb, var(--rose) 36%, var(--line));
+  color: var(--rose);
+}
+.ev.is-over {
+  border-color: color-mix(in srgb, var(--rose) 50%, var(--line));
+  background: color-mix(in srgb, var(--rose) 12%, transparent);
+  color: var(--rose);
+}
+.assist-note .fixes.is-warn { color: #b9a06a; }
+.assist-note .fixes.is-warn b { color: var(--amber); }
+.assist-note .fixes em { font-family: var(--font-mono); font-style: normal; }
+
+/* ── Card states ───────────────────────────────────────────────────── */
+
+li.card[data-asin] { position: relative; }
+li.card[data-asin]:hover,
+li.card[data-asin]:focus-visible {
+  background: color-mix(in srgb, var(--paper) 6%, transparent);
+  border-color: color-mix(in srgb, var(--line) 100%, transparent);
+  outline: none;
+}
+li.card[data-asin]:focus-visible { border-color: var(--amber); }
+
+/* A single-row list is a proposal, not a search result. Say so visually. */
+.results-inline.is-probe li.card {
+  border-left: 2px solid var(--amber);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+}
+li.card.is-target {
+  background: color-mix(in srgb, var(--mint) 12%, transparent);
+  border-color: color-mix(in srgb, var(--mint) 34%, var(--line));
+}
+li.card.is-target .card-title { color: var(--mint); }
+li.card.is-shared { opacity: 0.55; }
+.results li.muted {
+  display: block; color: var(--muted); padding: 0.45rem 0; font-size: 0.86rem;
+}
+
+@media (max-width: 560px) {
+  li.card { grid-template-columns: 1.2rem minmax(0, 1fr); }
+  .card-stats {
+    grid-column: 2; justify-items: start; grid-auto-flow: column;
+    justify-content: start; gap: 0.6rem; margin-top: 0.15rem;
+  }
+  .card-why { grid-column: 2; }
+  .ev { max-width: 11rem; }
+}
+
+/* ── Product detail on hover ───────────────────────────────────────── */
+
+.similar-pop {
+  /* Fixed, not absolute: the conversation scrolls under `overflow-y: auto`,
+     which clips an absolutely-positioned child, so the panel was cut off on
+     every row below the fold. Placement is computed in JS, which also lets it
+     flip above the row near the bottom of the viewport. */
+  position: fixed; z-index: 60; top: 0; left: 0;
+  /* A definite width, and `overflow: hidden` to enforce it: Amazon titles run
+     to 150 characters and were escaping the panel entirely. */
+  width: min(23rem, calc(100vw - 1rem));
+  max-height: min(26rem, calc(100vh - 2rem));
+  overflow: hidden;
+  background: var(--ink-3); border: 1px solid var(--line);
+  border-radius: var(--r-md); padding: 0.75rem 0.85rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+  /* Read-only, so it must never become a hover target itself — otherwise the
+     pointer moving onto it fights the row's own hover state. */
+  pointer-events: none;
+}
+
+.sp-title {
+  margin: 0 0 0.2rem; font-size: 0.82rem; line-height: 1.35; color: var(--paper);
+  font-weight: 500; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sp-meta {
+  margin: 0 0 0.4rem; font-size: 0.68rem; color: var(--muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.sp-stats {
+  margin: 0 0 0.55rem; display: flex; align-items: baseline; gap: 0.7rem;
+  font-family: var(--font-mono); flex-wrap: wrap;
+}
+
+.sp-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem;
+  margin: 0.55rem 0 0.3rem; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.09em; font-size: 0.6rem;
+  padding-top: 0.45rem; border-top: 1px solid var(--line);
+}
+.sp-head i { font-style: normal; text-transform: none; letter-spacing: 0; opacity: 0.75; }
+
+.sp-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.22rem; }
+.sp-list li {
+  display: flex; gap: 0.6rem; align-items: baseline;
+  font-size: 0.73rem; color: #c3c8d1; min-width: 0;
+}
+
+/* The disclosure surface: what the simulator would reveal if asked. */
+.sp-dis-text {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.sp-dis b {
+  font-weight: 400; font-size: 0.6rem; color: var(--muted);
+  border: 1px solid var(--line); border-radius: 100px; padding: 0 0.35rem;
+  flex: none;
+}
+/* Already said in this conversation, so there is nothing left to learn here. */
+.sp-dis.is-known .sp-dis-text { color: var(--mint); }
+.sp-dis.is-known .sp-dis-text::before { content: "✓ "; }
+.sp-dis.is-known b { border-color: color-mix(in srgb, var(--mint) 30%, var(--line)); }
+
+.sp-similar .t {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.sp-similar .p {
+  flex: none; font-family: var(--font-mono); font-size: 0.7rem; color: var(--mint);
+}
+.sp-similar .p .s {
+  font-style: normal; font-family: var(--font-body); font-size: 0.64rem;
+  color: var(--amber); letter-spacing: 0.04em;
+}
+
+@media (pointer: coarse) {
+  /* Hover does not exist on touch; the panel would need a tap target and the
+     row is already the tap target for nothing else. */
+  .similar-pop { display: none; }
+}
+
+
+/* ── Small talk ────────────────────────────────────────────────────── */
+/* A conversational turn costs nothing from the ten-turn budget, so it is
+   marked differently from a retrieval turn rather than pretending to be one. */
+
+.turn-chat .turn-badge { color: var(--mint); }
+.turn-chat .turn-badge b { color: var(--mint); }
+.chat-tag {
+  display: inline-block; padding: 0.05rem 0.4rem; border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--mint) 45%, var(--line));
+  color: var(--mint); font-family: var(--font-mono); font-size: 0.64rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.turn-agent .bubble.is-chat {
+  border-color: color-mix(in srgb, var(--mint) 35%, var(--line));
+  background: color-mix(in srgb, var(--mint) 4%, var(--ink-2));
+}
+
+/* ── Starter chips ─────────────────────────────────────────────────── */
+/* Grouped, because the two rows demonstrate different things: how a person
+   phrases it, and the frame the evaluator actually scores. */
+
+.starter-group { display: grid; gap: 0.4rem; margin-bottom: 0.85rem; }
+.starter-group:last-child { margin-bottom: 0; }
+.starter-label {
+  color: var(--muted); font-size: 0.66rem; letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.chip-natural {
+  display: inline-grid; gap: 0.05rem; text-align: left; line-height: 1.3;
+  border-color: color-mix(in srgb, var(--mint) 30%, var(--line));
+}
+.chip-natural:hover { border-color: var(--mint); }
+.chip-why {
+  color: var(--muted); font-family: var(--font-mono); font-size: 0.62rem;
+  letter-spacing: 0.02em;
+}
+.chip-scored {
+  font-family: var(--font-mono); font-size: 0.7rem;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+
+/* ── Turn budget ───────────────────────────────────────────────────── */
+
+.turn-counter.is-spent { color: var(--rose); }
+.turn-chat.is-budget .turn-badge,
+.turn-chat.is-budget .turn-badge b { color: var(--rose); }
+.turn-chat.is-budget .chat-tag {
+  border-color: color-mix(in srgb, var(--rose) 45%, var(--line));
+  color: var(--rose);
+}
+.turn-agent .bubble.is-chat.is-budget {
+  border-color: color-mix(in srgb, var(--rose) 32%, var(--line));
+  background: color-mix(in srgb, var(--rose) 5%, var(--ink-2));
+}
+.turn-agent .bubble.is-error {
+  border-color: color-mix(in srgb, var(--rose) 40%, var(--line));
+  background: color-mix(in srgb, var(--rose) 6%, var(--ink-2));
+}
+
+/* ── Team credit ───────────────────────────────────────────────────── */
+
+.foot-team {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem;
+  margin: 0.35rem 0 0; font-size: 0.82rem; color: #c3c8d1;
+}
+.foot-team i { font-style: normal; color: var(--line); }
+@media (max-width: 560px) {
+  .foot-team { gap: 0.35rem; font-size: 0.76rem; }
+}

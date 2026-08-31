@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shopilot — presentation deck</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%23f2b544' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 8.5V5.2'/%3E%3Cpath d='M2.6 6.2h3.1l1.5 3.4'/%3E%3Cpath d='M7.6 9.6h21.2l-2.4 11.2a1.9 1.9 0 0 1-1.9 1.5H11.6a1.9 1.9 0 0 1-1.9-1.5Z' fill='%23f2b54426'/%3E%3Cpath d='M14.6 18.4q2.9 2.1 5.8 0'/%3E%3Ccircle cx='13.6' cy='27.2' r='2.3'/%3E%3Ccircle cx='24' cy='27.2' r='2.3'/%3E%3C/g%3E%3Cg fill='%236fe3b0'%3E%3Ccircle cx='17' cy='3.6' r='1.9'/%3E%3Ccircle cx='14.2' cy='14.4' r='1.7'/%3E%3Ccircle cx='22.2' cy='14.4' r='1.7'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!--
+  Slides for the bookends of the demo video.
+
+  The walkthrough page is the demo; this is the 25 seconds either side of it —
+  a title card, the problem stated with the baseline's own real failure, the
+  architecture, and the numbers. Recorded full-screen at 1080p it cuts straight
+  against footage of the site, because it uses the same tokens and type.
+
+  Arrow keys / space / click to advance. Press F for fullscreen, G for a grid.
+  Nothing here is animated on a timer: you drive it, so narration never races
+  a transition.
+-->
+<style>
+  :root {
+    --ink: #07080a; --ink-2: #0e1014; --ink-3: #16191f; --line: #23272f;
+    --paper: #f2f3f5; --muted: #8b929e; --amber: #f2b544; --mint: #6fe3b0;
+    --rose: #ff7a6b;
+    --font-display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+    --font-body: "Inter", system-ui, -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--ink); color: var(--paper);
+    font-family: var(--font-body); overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .slide {
+    position: fixed; inset: 0; display: none;
+    padding: clamp(2rem, 6vw, 6rem);
+    /* Extra room at the foot so the fixed counter and key hint can never sit
+       on top of a slide's own content -- the team credit is pushed to the
+       bottom by `margin-top: auto` and collided with them on a tall viewport. */
+    padding-bottom: calc(clamp(2rem, 6vw, 6rem) + 1.6rem);
+    flex-direction: column; justify-content: center;
+    opacity: 0; transition: opacity 0.25s ease;
+  }
+  .slide.is-on { display: flex; opacity: 1; }
+
+  .eyebrow {
+    font-family: var(--font-mono); font-size: clamp(0.7rem, 1.1vw, 0.95rem);
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--amber);
+    margin: 0 0 1.4rem;
+  }
+  h1, h2 {
+    font-family: var(--font-display); font-weight: 800; letter-spacing: -0.035em;
+    line-height: 1.01; margin: 0;
+  }
+  h1 { font-size: clamp(3rem, 9vw, 8rem); }
+  h2 { font-size: clamp(2rem, 5.2vw, 4.4rem); margin-bottom: 2rem; }
+  .lede {
+    font-size: clamp(1rem, 1.9vw, 1.6rem); line-height: 1.5; color: #c3c8d1;
+    max-width: 46ch; margin: 1.6rem 0 0;
+  }
+  .mono { font-family: var(--font-mono); }
+  b, strong { color: var(--paper); }
+  em { font-style: normal; color: var(--mint); }
+
+  /* 1 — title */
+  .title-row { display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 2.4rem); }
+  .title-row svg { width: clamp(70px, 9vw, 150px); height: auto; flex: none; }
+  .title-sub {
+    margin: 2.2rem 0 0; font-size: clamp(0.95rem, 1.6vw, 1.35rem); color: var(--muted);
+  }
+  .team {
+    display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: auto;
+    padding-top: 2rem; font-size: clamp(0.8rem, 1.2vw, 1rem); color: #c3c8d1;
+  }
+  .team i { font-style: normal; color: var(--line); }
+  .team b { color: var(--amber); font-weight: 600; }
+
+  /* 2 — the problem, using the baseline's own failure */
+  .versus { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1rem, 2.5vw, 2.5rem); margin-top: 1rem; }
+  .col {
+    background: var(--ink-2); border: 1px solid var(--line); border-radius: 14px;
+    padding: clamp(1rem, 2vw, 1.8rem); min-width: 0;
+  }
+  .col-head {
+    font-family: var(--font-mono); font-size: clamp(0.65rem, 1vw, 0.85rem);
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+    margin: 0 0 1rem; display: flex; justify-content: space-between; gap: 1rem;
+  }
+  .col.is-bad { border-color: color-mix(in srgb, var(--rose) 34%, var(--line)); }
+  .col.is-bad .col-head { color: var(--rose); }
+  .col.is-good { border-color: color-mix(in srgb, var(--mint) 34%, var(--line)); }
+  .col.is-good .col-head { color: var(--mint); }
+  .row {
+    font-size: clamp(0.8rem, 1.35vw, 1.1rem); line-height: 1.4; padding: 0.5rem 0;
+    border-bottom: 1px dashed color-mix(in srgb, var(--line) 70%, transparent);
+    display: flex; gap: 0.7rem;
+  }
+  .row:last-child { border-bottom: 0; }
+  .row span:first-child { color: var(--muted); font-family: var(--font-mono); font-size: 0.8em; }
+  .query {
+    /* align-self, not just inline-block: the slide is a flex column, which
+       stretches its children to full width by default and turned the pill into
+       a banner. */
+    display: inline-block; align-self: flex-start;
+    background: var(--amber); color: #1a1408;
+    padding: 0.5rem 1.1rem; border-radius: 999px; font-weight: 600;
+    font-size: clamp(0.95rem, 1.7vw, 1.4rem); margin-bottom: 1.6rem;
+  }
+  .sting { margin-top: 1.6rem; font-size: clamp(0.9rem, 1.5vw, 1.25rem); color: #c3c8d1; }
+  .sting u { text-decoration-color: var(--rose); text-underline-offset: 4px; }
+
+  /* 3 — architecture */
+  .arch { display: grid; gap: clamp(0.5rem, 1.2vw, 1rem); margin-top: 0.5rem; }
+  .stage {
+    display: grid; grid-template-columns: clamp(1.6rem,2.6vw,2.4rem) minmax(0,1fr);
+    gap: clamp(0.7rem, 1.6vw, 1.4rem); align-items: start;
+    background: var(--ink-2); border: 1px solid var(--line);
+    border-left: 3px solid var(--amber); border-radius: 10px;
+    padding: clamp(0.6rem, 1.2vw, 1rem) clamp(0.8rem, 1.6vw, 1.3rem);
+  }
+  .stage .n {
+    font-family: var(--font-mono); color: var(--amber); font-size: clamp(0.75rem,1.2vw,1rem);
+    padding-top: 0.15rem;
+  }
+  .stage h3 { margin: 0 0 0.2rem; font-size: clamp(0.95rem, 1.6vw, 1.35rem); font-weight: 600; }
+  .stage p { margin: 0; color: var(--muted); font-size: clamp(0.78rem, 1.25vw, 1.02rem); line-height: 1.45; }
+  .stage code {
+    font-family: var(--font-mono); color: #c3c8d1; font-size: 0.92em;
+    background: color-mix(in srgb, var(--paper) 5%, transparent);
+    padding: 0.05rem 0.35rem; border-radius: 5px;
+  }
+  .stage.is-key { border-left-color: var(--mint); }
+  .stage.is-key .n { color: var(--mint); }
+
+  /* 4 — results */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1rem,2.4vw,2.4rem); margin: 1rem 0 2rem; }
+  .stat dt {
+    font-family: var(--font-mono); font-size: clamp(0.6rem,0.95vw,0.8rem);
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem;
+  }
+  .stat dd {
+    margin: 0; font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(1.8rem, 4.4vw, 3.6rem); letter-spacing: -0.03em;
+  }
+  .stat.is-hero dd { color: var(--amber); }
+  .bars { display: grid; gap: 0.6rem; margin-top: 0.5rem; }
+  .bar { display: grid; grid-template-columns: clamp(6rem,11vw,11rem) 1fr auto; gap: 1rem; align-items: center; font-size: clamp(0.78rem,1.25vw,1.05rem); }
+  /* Both need display:block. They are spans, and height does not apply to an
+     inline box -- which rendered the comparison as two empty tracks. */
+  .bar .track {
+    display: block; height: clamp(14px, 2vw, 22px);
+    background: var(--ink-3); border-radius: 999px; overflow: hidden;
+  }
+  .bar .fill { display: block; height: 100%; border-radius: 999px; background: var(--amber); }
+  .bar.is-base .fill { background: color-mix(in srgb, var(--rose) 80%, transparent); }
+  .bar b { font-family: var(--font-mono); font-size: 0.95em; }
+  .foot-note { margin-top: 2rem; color: var(--muted); font-size: clamp(0.78rem,1.25vw,1.02rem); line-height: 1.5; }
+
+  /* chrome */
+  .counter {
+    position: fixed; right: 1.4rem; bottom: 1.1rem; font-family: var(--font-mono);
+    font-size: 0.75rem; color: var(--line); letter-spacing: 0.1em;
+  }
+  .hint {
+    position: fixed; left: 1.4rem; bottom: 1.1rem; font-family: var(--font-mono);
+    font-size: 0.7rem; color: var(--line); letter-spacing: 0.08em;
+    transition: opacity 0.4s ease;
+  }
+  body.is-recording .hint, body.is-recording .counter { opacity: 0; }
+
+  @media (max-width: 900px) {
+    .versus, .stats { grid-template-columns: 1fr; }
+    .stats { gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── 1 · Title ───────────────────────────────────────────────────── -->
+<section class="slide" data-slide>
+  <div class="title-row">
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <g fill="none" stroke="#f2b544" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 8.5V5.2"/>
+        <path d="M2.6 6.2h3.1l1.5 3.4"/>
+        <path d="M7.6 9.6h21.2l-2.4 11.2a1.9 1.9 0 0 1-1.9 1.5H11.6a1.9 1.9 0 0 1-1.9-1.5Z" fill="#f2b54426"/>
+        <path d="M14.6 18.4q2.9 2.1 5.8 0"/>
+        <circle cx="13.6" cy="27.2" r="2.3"/><circle cx="24" cy="27.2" r="2.3"/>
+      </g>
+      <g fill="#6fe3b0">
+        <circle cx="17" cy="3.6" r="1.7"/><circle cx="14.2" cy="14.4" r="1.55"/><circle cx="22.2" cy="14.4" r="1.55"/>
+      </g>
+    </svg>
+    <h1>Shopilot</h1>
+  </div>
+  <p class="title-sub">
+    A conversational shopping agent that decides whether to answer you —
+    or ask you one more question.
+  </p>
+  <p class="lede mono" style="font-size:clamp(0.8rem,1.3vw,1.05rem);color:var(--muted);margin-top:1rem">
+    TikTok TechJam 2026 · Track 4 · Conversational Search &amp; Recommendations
+  </p>
+  <div class="team">
+    <b>Mohnish Rawat</b><i>·</i><span>Advik Jain</span><i>·</i><span>Raghav Gupta</span
+    ><i>·</i><span>Pranav Gupta</span><i>·</i><span>Aarav Gupta</span>
+  </div>
+</section>
+
+<!-- ── 2 · The problem, in the baseline's own words ────────────────── -->
+<section class="slide" data-slide>
+  <p class="eyebrow">The problem</p>
+  <h2>Keyword search makes you<br>already know the answer.</h2>
+  <span class="query">“something for a winter wedding”</span>
+  <div class="versus">
+    <div class="col is-bad">
+      <p class="col-head"><span>Keyword baseline (BM25)</span><span>0.107</span></p>
+      <div class="row"><span>1</span><span>Unicra Bride Crystal Necklace Earrings</span></div>
+      <div class="row"><span>2</span><span>Photographer Gift Create <em style="color:var(--rose)">Something</em> Beautiful</span></div>
+      <div class="row"><span>3</span><span>NATALIA DRAKE 2 Cttw Pave Big Diamond</span></div>
+    </div>
+    <div class="col is-good">
+      <p class="col-head"><span>Shopilot</span><span>0.954</span></p>
+      <div class="row"><span>1</span><span>MisShow Women’s Rhinestone Long Lace Formal Dress</span></div>
+      <div class="row"><span>2</span><span>Ever-Pretty Elegant Long Sleeve Formal Gown</span></div>
+      <div class="row"><span>3</span><span>Adrianna Papell Ruffled Cascade Formal Dress</span></div>
+    </div>
+  </div>
+  <p class="sting">
+    The baseline matched on the word <u>“something”</u>. No product is
+    <em>called</em> “winter wedding” — so the words in the query and the words in
+    the catalog never meet.
+  </p>
+</section>
+
+<!-- ── 3 · Architecture ───────────────────────────────────────────── -->
+<section class="slide" data-slide>
+  <p class="eyebrow">How one turn works</p>
+  <h2 style="font-size:clamp(1.6rem,3.6vw,3rem);margin-bottom:1.2rem">
+    Multi-route retrieval → fusion → one chosen question
+  </h2>
+  <div class="arch">
+    <div class="stage">
+      <span class="n">01</span>
+      <div><h3>Parse &amp; accumulate</h3>
+      <p>Recognise the customer’s frames, recover constraints from free text when none matches, and carry every disclosure forward with an evidence weight. <code>src/parse.py · src/state.py</code></p></div>
+    </div>
+    <div class="stage">
+      <span class="n">02</span>
+      <div><h3>Route on a continuous dial</h3>
+      <p>A <em>specificity</em> score splits a precise <b>buying</b> filter from a diverse <b>browsing</b> spread — endpoints of one dial, not a branch. <code>src/route.py</code></p></div>
+    </div>
+    <div class="stage">
+      <span class="n">03</span>
+      <div><h3>Retrieve over three routes</h3>
+      <p>Exact constraint match, BM25, TF‑IDF cosine — each normalised to its own maximum, fused with per-track weights. Entirely in memory. <code>src/rank.py · src/lexical.py</code></p></div>
+    </div>
+    <div class="stage is-key">
+      <span class="n">04</span>
+      <div><h3>Choose the question by information gain</h3>
+      <p>Not from a list: <code>IG(a) = H(C) − E[H(C | reply)]</code> over the live candidate posterior. Removing it costs <b>0.379</b> — more than everything else combined. <code>src/clarify.py</code></p></div>
+    </div>
+    <div class="stage">
+      <span class="n">05</span>
+      <div><h3>Decide how much to return</h3>
+      <p>An over-general pool gets one believed product, not ten guesses. A miss is evidence: anything already shown is provably not the target. <code>src/agent.py</code></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 4 · Results ────────────────────────────────────────────────── -->
+<section class="slide" data-slide>
+  <p class="eyebrow">Measured, not claimed · organizer’s evaluator, unmodified, 200 sessions</p>
+  <h2 style="font-size:clamp(1.7rem,4vw,3.2rem);margin-bottom:0.6rem">
+    Every session solved, at a median rank of&nbsp;1.
+  </h2>
+  <dl class="stats">
+    <div class="stat is-hero"><dt>TechnicalScore</dt><dd>0.954</dd></div>
+    <div class="stat"><dt>Hit Rate@10</dt><dd>1.000</dd></div>
+    <div class="stat"><dt>MRR</dt><dd>0.968</dd></div>
+    <div class="stat"><dt>Mean turns</dt><dd>2.8</dd></div>
+  </dl>
+  <div class="bars">
+    <div class="bar"><span>Shopilot</span><span class="track"><span class="fill" style="width:95.4%"></span></span><b>0.954</b></div>
+    <div class="bar is-base"><span>Official BM25</span><span class="track"><span class="fill" style="width:10.7%"></span></span><b>0.107</b></div>
+  </div>
+  <p class="foot-note">
+    <b>Zero tokens. No network. No dependencies.</b> Python 3.9 standard library
+    alone — 14 s to index 50,000 products, then 13.7 ms per turn.<br>
+    5-fold cross-validated at <b>0.953 ± 0.012</b>; the optimism from tuning is
+    <b>+0.0009</b>, so the constants generalise. Every number here is re-derived
+    from a committed artifact by <code style="font-family:var(--font-mono)">make docs</code>.
+  </p>
+</section>
+
+<!-- ── 5 · End card ───────────────────────────────────────────────── -->
+<section class="slide" data-slide>
+  <div class="title-row">
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <g fill="none" stroke="#f2b544" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 8.5V5.2"/>
+        <path d="M2.6 6.2h3.1l1.5 3.4"/>
+        <path d="M7.6 9.6h21.2l-2.4 11.2a1.9 1.9 0 0 1-1.9 1.5H11.6a1.9 1.9 0 0 1-1.9-1.5Z" fill="#f2b54426"/>
+        <path d="M14.6 18.4q2.9 2.1 5.8 0"/>
+        <circle cx="13.6" cy="27.2" r="2.3"/><circle cx="24" cy="27.2" r="2.3"/>
+      </g>
+      <g fill="#6fe3b0">
+        <circle cx="17" cy="3.6" r="1.7"/><circle cx="14.2" cy="14.4" r="1.55"/><circle cx="22.2" cy="14.4" r="1.55"/>
+      </g>
+    </svg>
+    <h1 style="font-size:clamp(2.4rem,7vw,6rem)">Thank you</h1>
+  </div>
+  <p class="title-sub">Shopilot · TikTok TechJam 2026 · Track 4</p>
+  <div class="team">
+    <b>Mohnish Rawat</b><i>·</i><span>Advik Jain</span><i>·</i><span>Raghav Gupta</span
+    ><i>·</i><span>Pranav Gupta</span><i>·</i><span>Aarav Gupta</span>
+  </div>
+</section>
+
+<p class="counter mono" id="counter">1 / 5</p>
+<p class="hint mono">← → move · F fullscreen · R hide chrome</p>
+
+<script>
+  /* Manual advance only. A deck that transitions on a timer will always be
+     either ahead of or behind the narration, and re-recording one slide is
+     cheaper than re-recording the take. */
+  (() => {
+    const slides = [...document.querySelectorAll("[data-slide]")];
+    const counter = document.getElementById("counter");
+    let at = 0;
+
+    function show(next) {
+      at = Math.max(0, Math.min(slides.length - 1, next));
+      slides.forEach((s, i) => s.classList.toggle("is-on", i === at));
+      counter.textContent = `${at + 1} / ${slides.length}`;
+      history.replaceState(null, "", `#${at + 1}`);
+    }
+
+    addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === " " || e.key === "PageDown") {
+        e.preventDefault(); show(at + 1);
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp" || e.key === "PageUp") {
+        e.preventDefault(); show(at - 1);
+      } else if (e.key === "Home") { show(0); }
+      else if (e.key === "End") { show(slides.length - 1); }
+      else if (e.key.toLowerCase() === "f") {
+        document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+      } else if (e.key.toLowerCase() === "r") {
+        document.body.classList.toggle("is-recording");
+      }
+    });
+    addEventListener("click", (e) => { if (!e.target.closest("a")) show(at + (e.clientX < innerWidth / 3 ? -1 : 1)); });
+
+    const start = parseInt(location.hash.slice(1), 10);
+    show(Number.isFinite(start) && start > 0 ? start - 1 : 0);
+  })();
+</script>
+</body>
+</html>
