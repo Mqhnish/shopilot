@@ -1221,3 +1221,10 @@ li.card.is-shared { opacity: 0.55; }
 @media (max-width: 560px) {
   .foot-team { gap: 0.35rem; font-size: 0.76rem; }
 }
+
+/* A value the recorded build cannot follow: shown so the real disclosure
+   surface stays visible, but plainly not clickable. */
+.chip.is-unrecorded {
+  font-style: normal; opacity: 0.4; cursor: default;
+  border-style: dashed; pointer-events: none;
+}

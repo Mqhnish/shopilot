@@ -301,22 +301,30 @@
     return CANNED;
   }
 
-  /* The recorded reply for whatever was just said, or null if this build never
-     recorded it. */
+  /* The recorded reply for exactly what was just said, or null.
+
+     Strict on purpose. An earlier version advanced the script on any input,
+     which meant typing "show me a laptop" returned the next recorded turn --
+     a real reply, but to a different question. Showing someone a genuine
+     response to something they did not ask is worse than telling them the
+     build cannot answer it. */
   function cannedTurn(message) {
     if (!CANNED) return null;
     const said = String(message || "").trim().toLowerCase();
-    // Starting a new conversation: match an opening line.
     const opening = CANNED.scripts.find(
       (s) => s.recorded[0]?.said.trim().toLowerCase() === said);
     if (opening) { script = opening; scriptAt = 0; }
     if (!script) return null;
     const step = script.recorded[scriptAt];
-    if (!step) return null;
-    // Advance on the recorded line, or on anything at all — a visitor clicking
-    // a chip is following the script even when the wording differs.
+    if (!step || step.said.trim().toLowerCase() !== said) return null;
     scriptAt += 1;
     return step;
+  }
+
+  /* The next line of the conversation being played back, so the page can offer
+     it rather than leaving a visitor to guess the exact wording. */
+  function cannedNext() {
+    return STATIC_SRC && script ? script.recorded[scriptAt]?.said || null : null;
   }
 
   async function get(path) {
@@ -779,9 +787,22 @@
 
     // Concrete values for the attribute it asked about. Clicking one sends the
     // simulator's own disclosure frame, which the parser reads exactly.
-    const opts = (data.options || []).map((value) =>
-      `<button class="chip" type="button" data-say="For that, what matters is: ${esc(value)}.">${esc(value)}</button>`
-    ).join("");
+    //
+    // In the recorded build only one continuation exists, so offering ten
+    // values that mostly dead-end would be a worse lie than offering the one
+    // that works. The others are still listed, greyed, so the real disclosure
+    // surface is visible.
+    const next = cannedNext();
+    const opts = STATIC_SRC
+      ? (next
+          ? `<button class="chip" type="button" data-say="${esc(next)}">${esc(next)}</button>`
+          : "") +
+        (data.options || []).slice(0, 5).map((value) =>
+          `<i class="chip is-unrecorded" title="Not recorded in this build">${esc(value)}</i>`
+        ).join("")
+      : (data.options || []).map((value) =>
+          `<button class="chip" type="button" data-say="For that, what matters is: ${esc(value)}.">${esc(value)}</button>`
+        ).join("");
 
     wrap.innerHTML = `
       <div class="turn-badge">
@@ -796,7 +817,8 @@
         ${rows ? `<ol class="results-inline${probe ? " is-probe" : ""}">${rows}</ol>` : ""}
         ${(data.results || []).length > shown
           ? `<p class="more mono">+ ${data.results.length - shown} more returned</p>` : ""}
-        ${opts ? `<div class="opt-row"><span class="opt-label mono">or pick one</span>${opts}</div>` : ""}
+        ${opts ? `<div class="opt-row"><span class="opt-label mono">${
+          STATIC_SRC ? "continue" : "or pick one"}</span>${opts}</div>` : ""}
       </div>`;
     el.thread.append(wrap);
     scrollThread();
