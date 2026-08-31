@@ -105,7 +105,11 @@
   .row:last-child { border-bottom: 0; }
   .row span:first-child { color: var(--muted); font-family: var(--font-mono); font-size: 0.8em; }
   .query {
-    display: inline-block; background: var(--amber); color: #1a1408;
+    /* align-self, not just inline-block: the slide is a flex column, which
+       stretches its children to full width by default and turned the pill into
+       a banner. */
+    display: inline-block; align-self: flex-start;
+    background: var(--amber); color: #1a1408;
     padding: 0.5rem 1.1rem; border-radius: 999px; font-weight: 600;
     font-size: clamp(0.95rem, 1.7vw, 1.4rem); margin-bottom: 1.6rem;
   }
@@ -148,8 +152,13 @@
   .stat.is-hero dd { color: var(--amber); }
   .bars { display: grid; gap: 0.6rem; margin-top: 0.5rem; }
   .bar { display: grid; grid-template-columns: clamp(6rem,11vw,11rem) 1fr auto; gap: 1rem; align-items: center; font-size: clamp(0.78rem,1.25vw,1.05rem); }
-  .bar .track { height: clamp(14px, 2vw, 22px); background: var(--ink-3); border-radius: 999px; overflow: hidden; }
-  .bar .fill { height: 100%; border-radius: 999px; background: var(--amber); }
+  /* Both need display:block. They are spans, and height does not apply to an
+     inline box -- which rendered the comparison as two empty tracks. */
+  .bar .track {
+    display: block; height: clamp(14px, 2vw, 22px);
+    background: var(--ink-3); border-radius: 999px; overflow: hidden;
+  }
+  .bar .fill { display: block; height: 100%; border-radius: 999px; background: var(--amber); }
   .bar.is-base .fill { background: color-mix(in srgb, var(--rose) 80%, transparent); }
   .bar b { font-family: var(--font-mono); font-size: 0.95em; }
   .foot-note { margin-top: 2rem; color: var(--muted); font-size: clamp(0.78rem,1.25vw,1.02rem); line-height: 1.5; }
