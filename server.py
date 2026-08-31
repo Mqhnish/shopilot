@@ -29,6 +29,7 @@ import argparse
 import difflib
 import json
 import mimetypes
+import os
 import re
 import sys
 import threading
@@ -2240,8 +2241,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--catalog", default="data/catalog.jsonl")
     parser.add_argument("--dataset", default="data/public_set.jsonl")
-    parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=8000)
+    # Loopback by default -- this indexes 50,000 products and holds session
+    # state in memory, so it is a development server and should not be exposed
+    # by accident. Every platform-as-a-service injects PORT and expects a bind
+    # on 0.0.0.0, so both are read from the environment when set.
+    parser.add_argument("--host", default=os.environ.get("HOST", "127.0.0.1"))
+    parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8000")))
     parser.add_argument("--limit", type=int, default=None,
                         help="index only the first N products (faster startup, worse results)")
     args = parser.parse_args()

@@ -985,6 +985,10 @@ here in one place rather than scattered through the prose.
   a five-person submission with a single-author commit history.
 - **[`docs/screenshots.md`](docs/screenshots.md)** — the seven gallery images,
   in upload order, and how to capture them at exactly 1440×960.
+- **[`docs/hosting.md`](docs/hosting.md)** — putting the walkthrough on a public
+  URL, and why a serverless host cannot run it: the agent keeps conversation
+  state in memory, so consecutive turns landing on different instances would
+  reset the session every message.
 - **[`docs/submission_checklist.md`](docs/submission_checklist.md)** — the
   running order for all three deliverables, the exact `git remote add` / `push`
   commands, and the list of numbers that are safe to quote.
