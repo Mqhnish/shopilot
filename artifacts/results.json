@@ -1643,9 +1643,9 @@
     "seed": 20260830
   },
   "timing": {
-    "index_build_seconds": 28.8,
-    "evaluation_seconds": 15.71,
+    "index_build_seconds": 27.42,
+    "evaluation_seconds": 14.19,
     "sessions": 200,
-    "seconds_per_session": 0.0785
+    "seconds_per_session": 0.071
   }
 }

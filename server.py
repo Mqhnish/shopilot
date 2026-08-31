@@ -482,15 +482,23 @@ class Demo:
             })
         return out
 
-    @staticmethod
-    def session_terms(state: SessionState) -> List[str]:
+    # Words that survive tokenisation but say nothing about a product. They
+    # arrive inside constraints the system itself composed -- "budget around
+    # $40" contributes "around" -- and a card captioned "around" is worse than
+    # a card captioned nothing, because it claims a reason that is not one.
+    _EMPTY_TERMS = frozenset("""around about under over less more than most
+        budget price priced cost costs dollar dollars usd very quite really
+        item items product products thing things good best nice new""".split())
+
+    @classmethod
+    def session_terms(cls, state: SessionState) -> List[str]:
         """Content words the session has actually said, in disclosure order."""
         seen: List[str] = []
         for text, weight in state.weighted_phrases():
             if weight <= 0.0:
                 continue
             for token in content_tokens(text):
-                if len(token) > 2 and token not in seen:
+                if len(token) > 2 and token not in cls._EMPTY_TERMS and token not in seen:
                     seen.append(token)
         return seen
 
