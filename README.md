@@ -5,6 +5,9 @@
 **TikTok TechJam 2026 · Track 4 — Shopping Copilot: AI Conversational Search
 and Recommendations.**
 
+Built by **Mohnish Rawat** (lead) · **Advik Jain** · **Raghav Gupta** ·
+**Pranav Gupta** · **Aarav Gupta** — see [Team](#team) for who did what.
+
 <br clear="left">
 
 A multi-turn conversational shopping agent for the TechJam 2026 Conversational
@@ -963,19 +966,26 @@ here in one place rather than scattered through the prose.
 | **Datasets and assets** | The organizer's frozen competition kit only: a 50,000-product catalog and 200 labelled public sessions derived from **Amazon Reviews 2023** (`Clothing_Shoes_and_Jewelry`), verified by SHA256 in `tools/setup_data.py`. No external data, no scraped data, no hand-labelled data, no pretrained weights. The catalog is read-only; nothing here mutates it or injects identifiers. See `DATA_ATTRIBUTION.md`. |
 | **Fonts** | Bricolage Grotesque, Inter and JetBrains Mono via Google Fonts, on the walkthrough page only. |
 
-### Team contributions
+### Team
 
-<!-- Solo entry unless edited. Replace this line with per-member contributions
-     if you are submitting as a team — the brief asks for them explicitly. -->
-Solo entry: all architecture, implementation, evaluation and writing.
+| Member | Role | Area |
+|---|---|---|
+| **Mohnish Rawat** | Team lead · frontend | Product direction, the browser walkthrough (`web/`) — conversation view, result cards, the suggestion panel and the live state panels |
+| **Advik Jain** | Full-stack | The demo server's HTTP surface (`server.py`) and the query-assist layer that turns human phrasing into the frames the agent is scored on |
+| **Raghav Gupta** | Backend | Retrieval and ranking (`src/rank.py`, `src/lexical.py`) — the three fused routes, per-track weights and diversification |
+| **Pranav Gupta** | Backend | Dialog state and the question policy (`src/state.py`, `src/clarify.py`, `src/route.py`) — intent routing, slot accumulation and expected information gain |
+| **Aarav Gupta** | Full-stack | Evaluation and tooling (`tools/`, `tests/`) — the ablation and cross-validation harnesses, the 261-test suite and the documentation check |
 
 ### Submitting
 
 - **[`docs/submission_checklist.md`](docs/submission_checklist.md)** — the
   running order for all three deliverables, the exact `git remote add` / `push`
   commands, and the list of numbers that are safe to quote.
-- **[`docs/demo_script.md`](docs/demo_script.md)** — a timed three-minute script
-  for the demo video, with a sixty-second cut.
+- **[`docs/demo_script.md`](docs/demo_script.md)** — a timed three-minute
+  shot-by-shot script for the demo video, with sixty- and ninety-second cuts.
+- **`web/deck.html`** — five presentation slides for the video's bookends
+  (`make serve`, then `/deck.html`). Same type and palette as the walkthrough,
+  so they cut against the screen recording cleanly.
 
 ### Required artefacts
 

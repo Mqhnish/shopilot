@@ -1210,3 +1210,14 @@ li.card.is-shared { opacity: 0.55; }
   border-color: color-mix(in srgb, var(--rose) 40%, var(--line));
   background: color-mix(in srgb, var(--rose) 6%, var(--ink-2));
 }
+
+/* ── Team credit ───────────────────────────────────────────────────── */
+
+.foot-team {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem;
+  margin: 0.35rem 0 0; font-size: 0.82rem; color: #c3c8d1;
+}
+.foot-team i { font-style: normal; color: var(--line); }
+@media (max-width: 560px) {
+  .foot-team { gap: 0.35rem; font-size: 0.76rem; }
+}
